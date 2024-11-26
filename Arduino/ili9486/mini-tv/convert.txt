@@ -1,0 +1,10 @@
+ffmpeg -i nacho.mpg -vf "fps=25,scale=-1:240:flags=lanczos,crop=240:in_h:(in_w-240)/2:0" -q:v 11 file1.mjpeg
+ffmpeg -i  nacho.mpg -ar 44100 -ac 1 -ab 24k -filter:a loudnorm -filter:a "volume=-5dB" file1.aac
+
+ffmpeg -i nacho.mp4 -vf "fps=25,scale=-1:240:flags=lanczos,crop=240:in_h:(in_w-240)/2:0" -q:v 11 file1.mjpeg
+ffmpeg -i nacho.mp4 -vf "fps=25,scale=-1:240:flags=lanczos,crop=310:in_h:(in_w-310)/2:0" -q:v 11 file1.mjpeg
+
+
+ffmpeg -i nacho.mp4 -ar 44100 -ac 1 -q:a 9 file1.aac
+
+ffmpeg -i file1.mpg -vf "fps=25,scale=400:266:flags=lanczos" -q:v 9 file1.mjpeg
