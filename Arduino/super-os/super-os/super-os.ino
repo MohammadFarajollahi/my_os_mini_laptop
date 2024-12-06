@@ -33,20 +33,64 @@ String files[30];
 int count_files;
 int btn_count;
 //****manual_touch_setting****
-int x_t, y_t;  // touch
-int dodol;
+int x_t, y_t;            // touch
+lv_obj_t *battery_bg;    // برای بدنه باتری
+lv_obj_t *battery_fill;  // برای نمایش مقدار شارژ
+
+//برای کارت حافظه
 lv_obj_t *btn[17];
 lv_obj_t *img[17];
 lv_img_dsc_t img_dsc[20];
 lv_obj_t *menu_container;
 size_t img_size;
+lv_style_t style1;
+lv_obj_t *label1;
+lv_obj_t *screen;
+lv_obj_t *clock_label;
+lv_style_t clock_style;
+int charj;
+//TIMER
+int main_sec;
+int batt_sec;
+int main_timer;
+int clock_second, clock_minute, clock_hour;
+hw_timer_t *timer = NULL;       // اشاره‌گر به تایمر
+volatile uint32_t seconds = 0;  // شمارنده ثانیه
+// متغیرهای دما
+float temp_sensor1, temp_sensor2, temp_sensor3;
 
+// تابع وقفه تایمر
+void IRAM_ATTR onTimer() {
+  ++clock_second;
+  if (clock_second > 59) {
+    clock_second = 0;
+    ++clock_minute;
+    if (clock_minute > 59) {
+      clock_minute = 0;
+      ++clock_hour;
+      if (clock_hour > 11) {
+        clock_hour = 0;
+      }
+    }
+  }
+
+  if (main_timer == 1) {
+    ++batt_sec;
+    ++main_sec;
+  }
+}
 //********************************************setup*****************************************
 //********************************************setup*****************************************
 //********************************************setup*****************************************
 void setup() {
   //*******serial_config******
   Serial.begin(115200);
+  //TIMER
+  //TIMER
+  timer = timerBegin(0, 80, true);              // تایمر 0، تقسیم‌کننده 80 (1 میکروثانیه)
+  timerAttachInterrupt(timer, &onTimer, true);  // اتصال وقفه
+  timerAlarmWrite(timer, 1000000, true);        // وقفه هر 1,000,000 میکروثانیه (1 ثانیه)
+  timerAlarmEnable(timer);
   lvgl_start();
   Serial.println("Pavan_os start...");
   //SD.begin(SDCARD_SS_PIN, SDCARD_SPI, 25000000);
@@ -61,9 +105,14 @@ void setup() {
   tft.startWrite();
   menu_select = 1;
   change_menu = 1;
+
+  charj = 100;
 }
 
 void loop() {
+  // ++charj;
+  // if (charj > 100) charj = 0;
   select_menu();
-  //lv_timer_handler(); /* let the GUI do its work */
+  lv_timer_handler(); /* let the GUI do its work */
+  delay(5);
 }

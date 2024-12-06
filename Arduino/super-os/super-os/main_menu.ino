@@ -3,13 +3,16 @@ void main_menu() {
 
   if (change_menu == 1) {
     change_menu = 0;
-    tft.fillScreen(TFT_WHITE);
-    tft.setCursor(10, 10);
-    tft.setTextFont(1);
-    tft.setTextSize(2);
-    tft.setTextColor(TFT_BLACK, TFT_WHITE);
-    tft.println("Wait...");
+    // tft.fillScreen(TFT_WHITE);
+    // tft.setCursor(10, 10);
+    // tft.setTextFont(1);
+    // tft.setTextSize(2);
+    // tft.setTextColor(TFT_BLACK, TFT_WHITE);
+    // tft.println("Wait...");
     create_menu();
+    main_timer = 0;
+    main_sec = 0;
+    batt_sec = 0;
   }
   if (change_menu == 0) {
     lv_timer_handler(); /* let the GUI do its work */
@@ -17,8 +20,6 @@ void main_menu() {
   }
 }
 
-// lv_obj_clean(menu_container);
-// lv_obj_clean(lv_scr_act());
 void event_handler_button1(lv_event_t *e) {
   Serial.println("button1");
   cash_size();
@@ -84,15 +85,6 @@ void event_handler_button15(lv_event_t *e) {
 
 void event_handler_button16(lv_event_t *e) {
   Serial.println("button16: Exit");
-
-  // File myFolder;
-  // myFolder = SD.open("/");  // نام پوشه مورد نظر را وارد کنید
-  // if (myFolder) {
-  //   myFolder.close();  // بسته شدن پوشه
-  //   Serial.println("Folder closed.");
-  // } else {
-  //   Serial.println("Failed to open the folder.");
-  // }
   count_files = 0;
   btn_count = 0;
   //***files list***
@@ -111,24 +103,16 @@ void event_handler_button16(lv_event_t *e) {
       img[i] = NULL;
       lv_obj_del(btn[i]);
       btn[i] = NULL;
-      free((void *)img_dsc[i].data);  //
-      //free((void *)img[i].data);      //
-
-      lv_timer_handler(); /* let the GUI do its work */
+      free((void *)img_dsc[i].data);  //main free cach
+      lv_timer_handler();             /* let the GUI do its work */
       lv_task_handler();
     }
-
-
     lv_obj_clean(menu_container);
-
     lv_obj_del(menu_container);
-
     lv_img_cache_invalidate_src(img_dsc);
     lv_obj_clean(lv_scr_act());
     menu_select = 1;
     change_menu = 1;
-
-    //lv_obj_add_flag(menu_screen, LV_OBJ_FLAG_HIDDEN); // مخفی کردن به‌جای حذف
   }
 }
 
@@ -138,54 +122,31 @@ void event_handler_button17(lv_event_t *e) {
 
 
 void create_menu() {
-  // if (menu_container) {
-  //   lv_obj_clean(menu_container);  // پاک کردن صفحه فعلی (اختیاری)
-  //   lv_obj_del(menu_container);
-  //   menu_container = NULL;
-  //   lv_img_cache_invalidate_src(NULL);  // خالی کردن کش تصویر برای آزادسازی حافظه
-  //   lv_refr_now(NULL);                  // به‌روزرسانی صفحه
-  //   print_memory_usage();               // نمایش وضعیت حافظه برای دیباگ
-  // }                                     // به‌روزرسانی صفحه
-
-
   count_files = 0;
   btn_count = 0;
   //***files list***
   listDir(SD, "/menu_pic", 0);
   Serial.print("file_count:");
   Serial.println(count_files);
-
-  // if (menu_container) {
-  //   //menu_container = lv_obj_create(lv_scr_act());
-  //   // lv_obj_set_size(menu_container, 480, 320);                        // اندازه کانتینر
-  //   lv_obj_align(menu_container, LV_ALIGN_CENTER, 0, 0);  // مرکز قرار دادن
-  //   //lv_obj_set_scroll_dir(menu_container, LV_DIR_VER);                // تنظیم اسکرول به سمت چپ و راست
-  //   //lv_obj_set_scroll_snap_x(menu_container, LV_SCROLL_SNAP_CENTER);  // اسکرول به سمت مرکز
-  // } else {
-
   menu_container = lv_obj_create(lv_scr_act());
   lv_obj_set_size(menu_container, 480, 320);                        // اندازه کانتینر
   lv_obj_align(menu_container, LV_ALIGN_CENTER, 0, 0);              // مرکز قرار دادن
   lv_obj_set_scroll_dir(menu_container, LV_DIR_VER);                // تنظیم اسکرول به سمت چپ و راست
   lv_obj_set_scroll_snap_x(menu_container, LV_SCROLL_SNAP_CENTER);  // اسکرول به سمت مرکز
-  //lv_obj_t *btn[count_files + 1];
-  //lv_obj_t *img[count_files + 1];
 
   for (btn_count = 0; btn_count < count_files; btn_count++) {
+    lv_timer_handler(); /* let the GUI do its work */
     btn[btn_count] = lv_btn_create(menu_container);
     lv_obj_set_size(btn[btn_count], 79, 79);  // اندازه دکمه‌ها
                                               // ایجاد تصویر درون دکمه
     img[btn_count] = lv_img_create(btn[btn_count]);
-
     // بارگذاری تصویر از SD با LovyanGFX
-
     String img_path = "/menu_pic/" + files[btn_count];  // مسیر تصویرها
     //String img_path = "/1.bmp";  // مسیر تصویرها
     uint16_t *img_data = loadImageFromSD(img_path.c_str());
     Serial.println(img_path);
     if (img_data != nullptr) {
 
-      // ساختن تصویر برای LVGL
 
       img_dsc[btn_count].data = (uint8_t *)img_data;
       img_dsc[btn_count].data_size = img_size;
@@ -193,20 +154,8 @@ void create_menu() {
       img_dsc[btn_count].header.w = 80;                     // عرض تصویر
       img_dsc[btn_count].header.h = 80;                     // ارتفاع تصویر
       lv_obj_align(img[btn_count], LV_ALIGN_CENTER, 0, 0);
-
-      // img_dsc->data = imageData;
-      // img_dsc->data_size = fileSize;
-      // img_dsc->header.always_zero = 0;
-      // img_dsc->header.w = 100;  // عرض تصویر
-      // img_dsc->header.h = 50;   // ارتفاع تصویر
-      // img_dsc->header.cf = LV_IMG_CF_TRUE_COLOR;
-
-      //lv_img_cache_invalidate_src(img[btn_count]);
-
       // تنظیم تصویر در LVGL
       lv_img_set_src(img[btn_count], &img_dsc[btn_count]);
-      // lv_img_cache_invalidate_src(&img_dsc[btn_count]);
-      // lv_img_cache_invalidate_src(&img[btn_count]);
     } else {
       Serial.println("Failed to load image");
     }
@@ -332,7 +281,6 @@ void create_menu() {
       lv_label_set_text(label, "Exit");                 // تنظیم متن
       lv_obj_align(label, LV_ALIGN_TOP_LEFT, 30, 462);  // قرار دادن متن در مرکز صفحه
     }
-    //files[btn_count].close();
   }
 
   // }

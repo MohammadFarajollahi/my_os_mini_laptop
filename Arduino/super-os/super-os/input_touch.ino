@@ -10,8 +10,8 @@ void input_touch() {
     // tft.setTextSize(1);
     // tft.setTextColor(TFT_BLACK, TFT_WHITE);
     // tft.println(s1);
-    Serial.print("touch:");
-    Serial.println(s1);
+    // Serial.print("touch:");
+    // Serial.println(s1);
 
   }
 }
