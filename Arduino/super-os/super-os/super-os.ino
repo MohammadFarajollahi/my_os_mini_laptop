@@ -48,6 +48,7 @@ lv_obj_t *label1;
 lv_obj_t *screen;
 lv_obj_t *clock_label;
 lv_style_t clock_style;
+lv_obj_t *label_create[20];
 int charj;
 //TIMER
 int main_sec;
@@ -114,5 +115,5 @@ void loop() {
   // if (charj > 100) charj = 0;
   select_menu();
   lv_timer_handler(); /* let the GUI do its work */
-  delay(5);
+  delay(1);
 }

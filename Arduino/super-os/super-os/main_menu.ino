@@ -9,6 +9,7 @@ void main_menu() {
     // tft.setTextSize(2);
     // tft.setTextColor(TFT_BLACK, TFT_WHITE);
     // tft.println("Wait...");
+     Serial.println("main menu creating...");
     create_menu();
     main_timer = 0;
     main_sec = 0;
@@ -91,29 +92,13 @@ void event_handler_button16(lv_event_t *e) {
   listDir(SD, "/menu_pic", 0);
   Serial.print("file_count:");
   Serial.println(count_files);
-  if (menu_container) {
-    for (int i = 0; i <= count_files - 1; i++) {
-      Serial.print("btn");
-      Serial.print(String(i));
-      Serial.println(" del");
-      lv_img_cache_invalidate_src(&img_dsc[i]);
-      lv_img_cache_invalidate_src(&img[i]);
-      lv_img_cache_invalidate_src(&btn[i]);
-      lv_obj_del(img[i]);
-      img[i] = NULL;
-      lv_obj_del(btn[i]);
-      btn[i] = NULL;
-      free((void *)img_dsc[i].data);  //main free cach
-      lv_timer_handler();             /* let the GUI do its work */
-      lv_task_handler();
-    }
-    lv_obj_clean(menu_container);
-    lv_obj_del(menu_container);
-    lv_img_cache_invalidate_src(img_dsc);
-    lv_obj_clean(lv_scr_act());
-    menu_select = 1;
-    change_menu = 1;
+  for (int i = 0; i <= count_files - 1; i++) {
+    free((void *)img_dsc[i].data);  //main free cach
   }
+  lv_obj_del(menu_container);
+  lv_obj_clean(lv_scr_act());
+  menu_select = 1;
+  change_menu = 1;
 }
 
 
