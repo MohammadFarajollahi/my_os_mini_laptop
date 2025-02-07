@@ -26,7 +26,7 @@
 #include "lcd_config.h"
 LGFX tft;
 
-int menu_select;
+String menu_select;
 int change_menu;
 
 String files[30];
@@ -104,7 +104,7 @@ void setup() {
   tft.init();
   tft.setRotation(1);
   tft.startWrite();
-  menu_select = 1;
+  menu_select = "desktop";
   change_menu = 1;
 
   charj = 100;

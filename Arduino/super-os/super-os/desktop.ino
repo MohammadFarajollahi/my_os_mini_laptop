@@ -32,7 +32,7 @@ void event_handler_button1_desktop(lv_event_t *e) {
   }
   lv_obj_del(menu_container);
   lv_obj_clean(lv_scr_act());
-  menu_select = 2;
+  menu_select = "mainMenu";
   change_menu = 1;
   Serial.println("desktop delete");
 }

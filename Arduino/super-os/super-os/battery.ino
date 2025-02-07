@@ -48,9 +48,9 @@ void create_battery_shape() {
   // ایجاد خط باتری
   lv_obj_t *line = lv_line_create(lv_scr_act());
   static lv_point_t line_points[2];                              // نقاط خط
-  line_points[0].x = 405; // 386                                        // مختصات شروع
+  line_points[0].x = 406; // 386                                        // مختصات شروع
   line_points[0].y = 10;                                         // مختصات شروع
-  line_points[1].x = 405; //386                                       // مختصات پایان
+  line_points[1].x = 406; //386                                       // مختصات پایان
   line_points[1].y = 27;  // 8                                        // مختصات پایان
   lv_line_set_points(line, line_points, 2);                      // تنظیم نقاط خط
   lv_obj_set_style_line_color(line, lv_color_hex(0x000000), 0);  // رنگ خط

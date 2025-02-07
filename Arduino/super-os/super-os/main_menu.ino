@@ -9,7 +9,7 @@ void main_menu() {
     // tft.setTextSize(2);
     // tft.setTextColor(TFT_BLACK, TFT_WHITE);
     // tft.println("Wait...");
-     Serial.println("main menu creating...");
+    Serial.println("main menu creating...");
     create_menu();
     main_timer = 0;
     main_sec = 0;
@@ -22,15 +22,40 @@ void main_menu() {
 }
 
 void event_handler_button1(lv_event_t *e) {
-  Serial.println("button1");
-  cash_size();
-  print_memory_usage();
+  Serial.println("button1:Terminal");
+  count_files = 0;
+  btn_count = 0;
+  //***files list***
+  listDir(SD, "/menu_pic", 0);
+  Serial.print("file_count:");
+  Serial.println(count_files);
+  for (int i = 0; i <= count_files - 1; i++) {
+    free((void *)img_dsc[i].data);  //main free cach
+  }
+  lv_obj_del(menu_container);
+  lv_obj_clean(lv_scr_act());
+  menu_select = "terminal";
+  change_menu = 1;
 }
-
+////////////////////////////////////////////
 void event_handler_button2(lv_event_t *e) {
-  Serial.println("button2");
+   Serial.println("button2:UART");
+  count_files = 0;
+  btn_count = 0;
+  //***files list***
+  listDir(SD, "/menu_pic", 0);
+  Serial.print("file_count:");
+  Serial.println(count_files);
+  for (int i = 0; i <= count_files - 1; i++) {
+    free((void *)img_dsc[i].data);  //main free cach
+  }
+  lv_obj_del(menu_container);
+  lv_obj_clean(lv_scr_act());
+  menu_select = "SerialMonitor";
+  change_menu = 1;
 }
 
+///////////////////////////////////////////
 void event_handler_button3(lv_event_t *e) {
   Serial.println("button3");
 }
@@ -97,7 +122,7 @@ void event_handler_button16(lv_event_t *e) {
   }
   lv_obj_del(menu_container);
   lv_obj_clean(lv_scr_act());
-  menu_select = 1;
+  menu_select = "desktop";
   change_menu = 1;
 }
 
