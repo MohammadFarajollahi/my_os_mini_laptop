@@ -18,12 +18,13 @@ void update_connection_status(bool connected) {
 }
 
 void stm32_connect_check() {
+  bool is_connected = false;
   // مثال تغییر وضعیت اتصال
-  static bool is_connected = false;
-  static unsigned long last_change = 0;
-  if (millis() - last_change > 500) {  // تغییر وضعیت هر 3 ثانیه
-    is_connected = !is_connected;
+  if (check_stm32_count == 0) {
+    check_stm32_count = 1;
+    //is_connected = !is_connected;
+    if (stm32_ready == 1) is_connected = true;
+    if (stm32_ready == 0) is_connected = false;
     update_connection_status(is_connected);
-    last_change = millis();
   }
 }

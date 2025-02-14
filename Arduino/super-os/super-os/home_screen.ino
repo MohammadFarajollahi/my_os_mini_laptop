@@ -12,10 +12,12 @@ void home_screen() {
     main_timer = 1;
     main_sec = 0;
     batt_sec = 0;
+    stm32_ready = 0;
   }
   battery_read();
   clock_read();
   stm32_connect_check();
+  stm32();
 }
 
 

@@ -18,7 +18,11 @@
 #include "SD.h"
 #include "SPI.h"
 #define CS_PIN 2  // پایه CS برای ESP32-S3 (می‌تواند بسته به سیم‌کشی تغییر کند)
-
+#include <Audio.h>
+#define BCK 39  // پین BCK ماژول PCM5102A
+#define DIN 41  // پین DATA ماژول PCM5102A
+#define LCK 40  // پین LCK ماژول PCM5102A
+Audio audio;
 //*******lcd_config*******
 #define LGFX_USE_V1
 #include <LovyanGFX.hpp>
@@ -60,6 +64,21 @@ volatile uint32_t seconds = 0;  // شمارنده ثانیه
 // متغیرهای دما
 float temp_sensor1, temp_sensor2, temp_sensor3;
 
+//stm32_uart
+HardwareSerial stm32_serial(1);
+String stm32_string, sub_stm32_string;
+int check_stm32, check_stm32_count, stm32_ready;
+int stm32_check_timer;
+
+//serial mode
+int serial_mode;
+int Serial_mode_count;
+int Serial_mode_timer;
+
+int AtCommandMode;
+int AtCommandMode_count;
+int AtCommandMode_timer;
+
 // تابع وقفه تایمر
 void IRAM_ATTR onTimer() {
   ++clock_second;
@@ -79,13 +98,27 @@ void IRAM_ATTR onTimer() {
     ++batt_sec;
     ++main_sec;
   }
+
+  ///stm32timer
+  if (stm32_ready == 0) ++stm32_check_timer;
+  if (Serial_mode_count == 1) ++Serial_mode_timer;
+  if (AtCommandMode_count == 1) ++AtCommandMode_timer;
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //********************************************setup*****************************************
 //********************************************setup*****************************************
 //********************************************setup*****************************************
 void setup() {
   //*******serial_config******
   Serial.begin(115200);
+
+  stm32_serial.begin(115200, SERIAL_8N1, 42, 45);
+
   //TIMER
   //TIMER
   timer = timerBegin(0, 80, true);              // تایمر 0، تقسیم‌کننده 80 (1 میکروثانیه)
@@ -108,6 +141,7 @@ void setup() {
   change_menu = 1;
 
   charj = 100;
+  //////////////////////////////////////////////////////////////////////////////
 }
 
 void loop() {
