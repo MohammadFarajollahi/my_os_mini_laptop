@@ -61,7 +61,20 @@ void event_handler_button3(lv_event_t *e) {
 }
 
 void event_handler_button4(lv_event_t *e) {
-  Serial.println("button4");
+  Serial.println("button4_server");
+  count_files = 0;
+  btn_count = 0;
+  //***files list***
+  listDir(SD, "/menu_pic", 0);
+  Serial.print("file_count:");
+  Serial.println(count_files);
+  for (int i = 0; i <= count_files - 1; i++) {
+    free((void *)img_dsc[i].data);  //main free cach
+  }
+  lv_obj_del(menu_container);
+  lv_obj_clean(lv_scr_act());
+  menu_select = "server";
+  change_menu = 1;
 }
 
 void event_handler_button5(lv_event_t *e) {

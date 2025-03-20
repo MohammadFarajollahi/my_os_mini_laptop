@@ -1,9 +1,9 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
-lv_obj_t *terminal; /* Object for textarea (terminal) */
+
 lv_obj_t *btn_clear;
-lv_obj_t *btn_atcommand;
-lv_obj_t *label_atcommand; /* Object for clear button */
+// lv_obj_t *btn_atcommand;
+// lv_obj_t *label_atcommand; /* Object for clear button */
 lv_obj_t *btn_color;       /* Object for color change button */
 lv_obj_t *btn_baud;        /* Object for baud rate change button */
 lv_obj_t *btn_save;        /* Object for save to SD button */
@@ -11,12 +11,8 @@ lv_obj_t *label_clear;     /* Object for clear button label */
 lv_obj_t *label_color;     /* Object for color button label */
 lv_obj_t *label_baud;      /* Object for baud rate button label */
 lv_obj_t *label_save;
-
 lv_obj_t *BtnSend;
-;
 lv_obj_t *LabelSend;
-;
-
 static lv_obj_t *my_switch;  // ذخیره داده‌های ورودی
 static lv_obj_t *label_command;
 static lv_obj_t *parent;
@@ -113,7 +109,7 @@ void SerialMonitor() {
     String input = Serial.readStringUntil('\n');  // Read input until newline
     lv_textarea_add_text(terminal, input.c_str());
     lv_textarea_add_text(terminal, "\n");  // Add new line
-    if(AtCommandMode == 1){
+    if (AtCommandMode == 1) {
       stm32_serial.println(input);
     }
   }
@@ -153,11 +149,11 @@ void lcd_show(String input_char) {
 void btn_exit_serial(lv_event_t *e) {
   String Serial_baud = "baudrate:" + String(9600);
   stm32_serial.println(Serial_baud);
-  delay(500);
+  delay(250);
   stm32_serial.println("exit serial");
-  delay(500);
+  delay(250);
   stm32_serial.println("atcommand-mode off");
-  delay(500);
+  delay(250);
   Serial.println("Exit");
   count_files = 0;
   btn_count = 0;

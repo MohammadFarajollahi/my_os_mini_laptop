@@ -18,11 +18,11 @@
 #include "SD.h"
 #include "SPI.h"
 #define CS_PIN 2  // پایه CS برای ESP32-S3 (می‌تواند بسته به سیم‌کشی تغییر کند)
-#include <Audio.h>
-#define BCK 39  // پین BCK ماژول PCM5102A
-#define DIN 41  // پین DATA ماژول PCM5102A
-#define LCK 40  // پین LCK ماژول PCM5102A
-Audio audio;
+// #include <Audio.h>
+// #define BCK 39  // پین BCK ماژول PCM5102A
+// #define DIN 41  // پین DATA ماژول PCM5102A
+// #define LCK 40  // پین LCK ماژول PCM5102A
+// Audio audio;
 //*******lcd_config*******
 #define LGFX_USE_V1
 #include <LovyanGFX.hpp>
@@ -53,6 +53,7 @@ lv_obj_t *screen;
 lv_obj_t *clock_label;
 lv_style_t clock_style;
 lv_obj_t *label_create[20];
+lv_obj_t *terminal; /* Object for textarea (terminal) */
 int charj;
 //TIMER
 int main_sec;
