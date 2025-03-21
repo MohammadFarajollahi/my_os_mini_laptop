@@ -54,6 +54,10 @@ lv_obj_t *screen;
 lv_obj_t *clock_label;
 lv_style_t clock_style;
 lv_obj_t *label_create[20];
+// تعریف ویجت‌های ترمینال
+lv_obj_t *terminal_output;
+lv_obj_t *command_input;
+lv_obj_t *keyboard;
 lv_obj_t *terminal; /* Object for textarea (terminal) */
 int charj;
 //TIMER

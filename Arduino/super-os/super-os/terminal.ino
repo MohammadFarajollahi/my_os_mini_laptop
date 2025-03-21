@@ -11,12 +11,6 @@ void Terminal_() {
   }
 }
 
-
-// تعریف ویجت‌های ترمینال
-lv_obj_t *terminal_output;
-lv_obj_t *command_input;
-lv_obj_t *keyboard;
-
 // تابع برای اجرای دستورات ترمینال
 void run_command(lv_event_t *e) {
   const char *cmd = lv_textarea_get_text(command_input);  // دریافت متن ورودی

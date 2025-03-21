@@ -1,9 +1,13 @@
-
-String selected_number = "";  // متغیر برای ذخیره شماره انتخاب‌شده
-
+lv_obj_t *ddlist;
+String selected_number = "";    // متغیر برای ذخیره شماره انتخاب‌شده
 static char selected_item[64];  // بافر برای ذخیره آیتم انتخاب شده
 lv_obj_t *cb1, *cb2, *cb3;
 int check1;
+lv_obj_t *modal;
+lv_obj_t *ta;
+lv_obj_t *list;
+#define FILE_PATH "/phone_numbers.txt"
+
 void server() {
   if (change_menu == 1) {
     change_menu = 0;
@@ -177,8 +181,7 @@ void checkbox_event_cb(lv_event_t *e) {
 }
 
 /////////////////////////////////////////add number///////////////////////////
-lv_obj_t *modal;
-lv_obj_t *ta;
+
 
 // تابع ذخیره شماره تلفن در SD Card
 void save_to_sd(const char *phone_number) {
@@ -214,6 +217,33 @@ void save_to_sd(const char *phone_number) {
 // تابعی برای بستن پنجره مودال
 void close_modal(lv_event_t *e) {
   lv_obj_del(modal);
+  lv_obj_del(ddlist);
+  ddlist = lv_dropdown_create(lv_scr_act());  // فقط یک آرگومان
+  File file = SD.open("/phone_numbers.txt", FILE_READ);
+  int count = 0;
+  file = SD.open("/phone_numbers.txt", FILE_READ);
+  if (!file) {
+    Serial.println("Failed to open file!");
+    return;
+  }
+  String dropdown_options = "";
+  bool first_line = true;
+  while (file.available()) {
+    String line = file.readStringUntil('\n');
+    if (line.startsWith("number")) {
+      if (!first_line) dropdown_options += "\n";  // بین گزینه‌ها فقط `\n` اضافه کن
+      dropdown_options += line;
+      dropdown_options.trim();  // در صورت نیاز حذف فاصله‌های اضافی از کل رشته نهایی
+      first_line = false;
+    }
+  }
+  file.close();
+  lv_dropdown_set_options(ddlist, dropdown_options.c_str());
+  // lv_dropdown_set_options(ddlist, "sim1: 09372425086\nsim2: 09114764806\nsim3: 09379274959\nsim4:\nsim5:\nsim6:\n");
+  lv_obj_set_pos(ddlist, 15, 26);
+  lv_obj_set_size(ddlist, 200, LV_SIZE_CONTENT);
+  lv_obj_add_event_cb(ddlist, dropdown_event_handler, LV_EVENT_VALUE_CHANGED, NULL);
+
   modal = NULL;
 }
 
@@ -264,7 +294,67 @@ void show_modal(lv_event_t *e) {
   lv_obj_add_event_cb(btn_cancel, close_modal, LV_EVENT_CLICKED, NULL);
 }
 
-//******creat panel******
+//******************************Edit****************************
+
+void delete_number(lv_event_t *e) {
+  lv_obj_t *btn = lv_event_get_target(e);
+  const char *number = (const char *)lv_event_get_user_data(e);
+  Serial.printf("Deleting: %s\n", number);
+
+  // بازنویسی فایل بدون این شماره
+  File file = SD.open("/phone_numbers.txt", "r");
+  String content = "";
+  while (file.available()) {
+    String line = file.readStringUntil('\n');
+    line.trim();
+    if (line != number) {
+      content += line + "\n";
+    }
+  }
+  file.close();
+
+  file = SD.open("/phone_numbers.txt", "w");
+  file.print(content);
+  file.close();
+
+  lv_obj_del(btn->parent);
+}
+
+
+void load_numbers(lv_event_t *e) {
+  modal = lv_obj_create(lv_scr_act());
+  lv_obj_set_size(modal, 400, 250);
+  lv_obj_center(modal);
+  lv_obj_set_style_bg_color(modal, lv_color_hex(0xFFFFFF), LV_PART_MAIN);
+
+  list = lv_list_create(modal);
+  lv_obj_set_size(list, 380, 180);
+  lv_obj_align(list, LV_ALIGN_TOP_MID, 0, 10);
+
+  File file = SD.open("/phone_numbers.txt", "r");
+  while (file.available()) {
+    String number = file.readStringUntil('\n');
+    number.trim();
+    lv_obj_t *list_btn = lv_list_add_btn(list, NULL, number.c_str());
+    lv_obj_t *del_btn = lv_btn_create(list_btn);
+    lv_obj_set_size(del_btn, 40, 20);
+    lv_obj_align(del_btn, LV_ALIGN_RIGHT_MID, -10, 0);
+    lv_obj_add_event_cb(del_btn, delete_number, LV_EVENT_CLICKED, strdup(number.c_str()));
+    lv_obj_t *labelll = lv_label_create(del_btn);
+    lv_label_set_text(labelll, "Delete");
+  }
+  file.close();
+
+  lv_obj_t *close_btn = lv_btn_create(modal);
+  lv_obj_align(close_btn, LV_ALIGN_BOTTOM_MID, 0, -10);
+  lv_obj_add_event_cb(close_btn, close_modal, LV_EVENT_CLICKED, NULL);
+  lv_obj_t *close_label = lv_label_create(close_btn);
+  lv_label_set_text(close_label, "Close");
+}
+
+//******************************************creat panel**************************************
+//******************************************creat panel**************************************
+//******************************************creat panel**************************************
 void create_server() {
   //btn_xl
   btn[0] = lv_btn_create(lv_scr_act());
@@ -340,12 +430,28 @@ void create_server() {
   lv_obj_center(label_create[8]);
   //btn_add_number
   btn[9] = lv_btn_create(lv_scr_act());
-  lv_obj_set_size(btn[9], 76, 41);
-  lv_obj_set_pos(btn[9], 234, 57);
+  lv_obj_set_size(btn[9], 150, 40);
+  lv_obj_set_pos(btn[9], 160, 340);
   lv_obj_add_event_cb(btn[9], show_modal, LV_EVENT_CLICKED, NULL);
-  label_create[10] = lv_label_create(btn[9]);      /*Add a label to the button*/
-  lv_label_set_text(label_create[10], "Add USER"); /*Set the labels text*/
+  label_create[10] = lv_label_create(btn[9]);        /*Add a label to the button*/
+  lv_label_set_text(label_create[10], "Add Number"); /*Set the labels text*/
   lv_obj_center(label_create[10]);
+
+  //btn_editNumber
+  btn[10] = lv_btn_create(lv_scr_act());
+  lv_obj_set_pos(btn[10], 1, 340);
+  lv_obj_set_size(btn[10], 150, 40);
+  lv_obj_add_event_cb(btn[10], load_numbers, LV_EVENT_CLICKED, NULL);
+  label_create[11] = lv_label_create(btn[10]);          /*Add a label to the button*/
+  lv_label_set_text(label_create[11], "Delete Number"); /*Set the labels text*/
+  lv_obj_center(label_create[11]);
+  Serial.println("button10 creat");
+  //labelDown
+  label_create[12] = lv_label_create(lv_scr_act());                      /*Add a label to the button*/
+  lv_label_set_text(label_create[12], "***PAVAN PRODUCT CONTROLLER***"); /*Set the labels text*/
+  lv_obj_set_pos(label_create[12], 100, 500);
+  lv_obj_set_size(label_create[12], LV_SIZE_CONTENT, LV_SIZE_CONTENT);
+
   //select number
   label_create[9] = lv_label_create(lv_scr_act());      /*Add a label to the button*/
   lv_label_set_text(label_create[9], "Select Number:"); /*Set the labels text*/
@@ -353,7 +459,7 @@ void create_server() {
   lv_obj_set_size(label_create[9], LV_SIZE_CONTENT, LV_SIZE_CONTENT);
   //list
   // lv_obj_t *scr = lv_scr_act();
-  lv_obj_t *ddlist = lv_dropdown_create(lv_scr_act());  // فقط یک آرگومان
+  ddlist = lv_dropdown_create(lv_scr_act());  // فقط یک آرگومان
   File file = SD.open("/phone_numbers.txt", FILE_READ);
   int count = 0;
   file = SD.open("/phone_numbers.txt", FILE_READ);
