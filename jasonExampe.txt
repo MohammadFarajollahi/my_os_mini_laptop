@@ -1,0 +1,71 @@
+#include <ArduinoJson.h>
+
+void setup() {
+    Serial.begin(9600);
+}
+
+void loop() {
+    // ساخت یک JSON
+    StaticJsonDocument<200> jsonDoc;
+
+    jsonDoc["type"] = "sendSMS";      // نوع دیتا (مثلاً ارسال پیامک)
+    jsonDoc["phone"] = "09123456789"; // شماره تلفن
+    jsonDoc["message"] = "Hello!";    // متن پیام
+    jsonDoc["extra"] = "urgent";      // هر دیتای اضافی
+
+    // تبدیل JSON به رشته
+    String jsonString;
+    serializeJson(jsonDoc, jsonString);
+
+    // ارسال از طریق سریال
+    Serial.println(jsonString);
+
+    delay(2000); // تأخیر برای تست
+}
+
+
+#include <ArduinoJson.h>
+
+void setup() {
+    Serial.begin(9600);
+}
+
+#include <ArduinoJson.h>
+
+void setup() {
+    Serial.begin(9600);
+}
+
+#include <ArduinoJson.h>
+
+void setup() {
+    Serial.begin(9600);
+}
+
+void loop() {
+    if (Serial.available()) {
+        // دریافت رشته JSON از سریال
+        String jsonString = Serial.readStringUntil('\n');
+
+        // تبدیل رشته JSON به یک آبجکت
+        StaticJsonDocument<200> jsonDoc;
+        DeserializationError error = deserializeJson(jsonDoc, jsonString);
+
+        if (error) {
+            Serial.println("خطا در پارس کردن JSON!");
+            return;
+        }
+
+        // استخراج داده‌ها از JSON
+        String type = jsonDoc["type"];
+        String phone = jsonDoc["phone"];
+        String message = jsonDoc["message"];
+        String extra = jsonDoc["extra"];
+
+        // نمایش در سریال مانیتور
+        Serial.println("نوع: " + type);
+        Serial.println("شماره: " + phone);
+        Serial.println("پیام: " + message);
+        Serial.println("اضافه: " + extra);
+    }
+}

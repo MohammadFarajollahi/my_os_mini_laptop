@@ -12,6 +12,7 @@
 // #ifndef SDCARD_SPI
 // #define SDCARD_SPI SPI
 // #endif
+#include <ArduinoJson.h>
 
 //*******sd_card********
 #include "FS.h"
@@ -132,7 +133,7 @@ void setup() {
   // Initialize SD card
   if (!SD.begin(CS_PIN)) {
     Serial.println("Failed to initialize SD card.");
-    return;
+    ESP.restart();  // ریست نرم‌افزاری
   }
   Serial.println("SD card initialized.");
   tft.init();
