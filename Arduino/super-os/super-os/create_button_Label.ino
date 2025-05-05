@@ -1,5 +1,8 @@
 
-void set_button(String label_name, int button_size_x, int button_size_y, int button_pos_x, int button_pos_y, int label_pos_x, int label_pos_y, String file_path_) {
+lv_obj_t *labelDesctop[20];
+
+void set_button(int BTNnumber,String label_name, int button_size_x, int button_size_y, int button_pos_x, int button_pos_y, int label_pos_x, int label_pos_y, String file_path_) {
+  btn_count = BTNnumber;
   btn[btn_count] = lv_btn_create(menu_container);
   lv_obj_set_size(btn[btn_count], button_size_x - 1, button_size_y - 1);  // اندازه دکمه‌ها
   img[btn_count] = lv_img_create(btn[btn_count]);
@@ -18,17 +21,19 @@ void set_button(String label_name, int button_size_x, int button_size_y, int but
   } else {
     Serial.println("Failed to load image");
   }
-  lv_obj_t *label = lv_label_create(menu_container);
+  labelDesctop[btn_count] = lv_label_create(menu_container);
   lv_obj_set_pos(btn[btn_count], button_pos_x, button_pos_y);  // فاصله بین آیتم‌ها
-  if (btn_count == 0) lv_obj_add_event_cb(btn[btn_count], event_handler_button1_desktop, LV_EVENT_CLICKED, NULL);
-  lv_label_set_text(label, label_name.c_str());                      // تنظیم متن
-  lv_obj_align(label, LV_ALIGN_TOP_LEFT, label_pos_x, label_pos_y);  // قرار دادن متن در مرکز صفحه
-  ++btn_count;
+  if (btn_count == 1) lv_obj_add_event_cb(btn[btn_count], event_handler_button1_desktop, LV_EVENT_CLICKED, NULL);
+  if (btn_count == 2) lv_obj_add_event_cb(btn[btn_count], ServerButton, LV_EVENT_CLICKED, NULL);
+  lv_label_set_text(labelDesctop[btn_count], label_name.c_str());                      // تنظیم متن
+  lv_obj_align(labelDesctop[btn_count], LV_ALIGN_TOP_LEFT, label_pos_x, label_pos_y);  // قرار دادن متن در مرکز صفحه
+  //++btn_count;
 }
 
 
 //*******************************************************************label_creat*****************************************************************************
-void set_label(int button_size_x, int button_size_y, int button_pos_x, int button_pos_y, String file_path_) {
+void set_label(int LBLnumber,int button_size_x, int button_size_y, int button_pos_x, int button_pos_y, String file_path_) {
+  btn_count = LBLnumber;
   label_create[btn_count] = lv_label_create(menu_container);
   lv_obj_set_size(label_create[btn_count], button_size_x - 1, button_size_y - 1);  // اندازه دکمه‌ها
   img[btn_count] = lv_img_create(label_create[btn_count]);
@@ -48,5 +53,5 @@ void set_label(int button_size_x, int button_size_y, int button_pos_x, int butto
     Serial.println("Failed to load image");
   }
   lv_obj_align(label_create[btn_count], LV_ALIGN_TOP_LEFT, button_pos_x, button_pos_y);  // مکان لیبل
-  ++btn_count;
+  //++btn_count;
 }

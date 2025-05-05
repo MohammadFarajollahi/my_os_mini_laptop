@@ -49,6 +49,7 @@ lv_img_dsc_t img_dsc[20];
 lv_obj_t *menu_container;
 size_t img_size;
 lv_style_t style1;
+lv_style_t styleTerminal;
 lv_obj_t *label1;
 lv_obj_t *screen;
 lv_obj_t *clock_label;
@@ -84,6 +85,42 @@ int Serial_mode_timer;
 int AtCommandMode;
 int AtCommandMode_count;
 int AtCommandMode_timer;
+String ServerNumbers[50];
+String NumberTest[50];
+String SdCardMessage;
+String fileContent = "";
+int AutoServerChek;
+int autoCheckCount;
+int numberCount = 0;
+int readyNumber;
+
+//Server var//
+lv_obj_t *ddlist;
+String selected_number = "";    // متغیر برای ذخیره شماره انتخاب‌شده
+static char selected_item[64];  // بافر برای ذخیره آیتم انتخاب شده
+lv_obj_t *cb1, *cb2, *cb3;
+int check1;
+lv_obj_t *modal;
+lv_obj_t *ta;
+lv_obj_t *list;
+#define FILE_PATH "/phone_numbers.txt"
+String Checknumbers[50];
+
+//Auto Setting
+#define MAX_NUMBERS 50
+#define FILE_NAME "/numbers.txt"
+typedef struct {
+  String number;
+  bool checked;
+} PhoneNumber;
+PhoneNumber phoneNumbers[MAX_NUMBERS];
+uint8_t phoneCount = 0;
+lv_obj_t *checkBoxes[MAX_NUMBERS];
+lv_obj_t *main_screen;
+// ایجاد دکمه برای افزودن شماره
+lv_obj_t *add_btn;
+lv_obj_t *label_add;
+
 
 // تابع وقفه تایمر
 void IRAM_ATTR onTimer() {
@@ -113,8 +150,6 @@ void IRAM_ATTR onTimer() {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //********************************************setup*****************************************
 //********************************************setup*****************************************
@@ -147,12 +182,14 @@ void setup() {
   change_menu = 1;
 
   charj = 100;
-  //////////////////////////////////////////////////////////////////////////////
+  //*************************read data from sd card******************
+  //***auto Setting***
 }
 
 void loop() {
   // ++charj;
   // if (charj > 100) charj = 0;
+  AutoPrograms();
   select_menu();
   lv_timer_handler(); /* let the GUI do its work */
   delay(1);

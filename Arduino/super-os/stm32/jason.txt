@@ -1,0 +1,46 @@
+#include <ArduinoJson.h>
+
+String receivedData = "";  // بافر ذخیره رشته دریافتی
+bool newData = false;
+
+void setup() {
+    Serial.begin(115200);   // سریال مانیتور
+    Serial1.begin(9600);    // (TX=PA9, RX=PA10) دریافت از ESP32 (مطمئن شو که پین‌ها درسته)
+
+    Serial.println("STM32 Ready!");
+}
+
+void loop() {
+    while (Serial1.available()) {
+        char c = Serial1.read();
+        if (c == '\n') {  // پایان دریافت JSON
+            newData = true;
+            break;
+        } else {
+            receivedData += c;
+        }
+    }
+
+    if (newData) {
+        Serial.println("Received JSON: " + receivedData);
+
+        // پردازش JSON
+        StaticJsonDocument<200> jsonDoc;
+        DeserializationError error = deserializeJson(jsonDoc, receivedData);
+        
+        if (!error) {
+            float temp = jsonDoc["temp"];
+            int humidity = jsonDoc["humidity"];
+            const char* status = jsonDoc["status"];
+
+            Serial.print("Temp: "); Serial.println(temp);
+            Serial.print("Humidity: "); Serial.println(humidity);
+            Serial.print("Status: "); Serial.println(status);
+        } else {
+            Serial.println("JSON Parse Error!");
+        }
+
+        receivedData = "";  // پاک کردن بافر
+        newData = false;
+    }
+}

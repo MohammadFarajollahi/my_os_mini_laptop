@@ -1,12 +1,3 @@
-lv_obj_t *ddlist;
-String selected_number = "";    // متغیر برای ذخیره شماره انتخاب‌شده
-static char selected_item[64];  // بافر برای ذخیره آیتم انتخاب شده
-lv_obj_t *cb1, *cb2, *cb3;
-int check1;
-lv_obj_t *modal;
-lv_obj_t *ta;
-lv_obj_t *list;
-#define FILE_PATH "/phone_numbers.txt"
 
 void server() {
   if (change_menu == 1) {
@@ -44,6 +35,19 @@ void btn_xl(lv_event_t *e) {
   serializeJson(jsonDoc, jsonString);
   Serial.println(jsonString);
   stm32_serial.println(jsonString);
+}
+
+void AutoSetti(lv_event_t *e) {
+  Serial.println("Auto Setting Button");
+  count_files = 0;
+  btn_count = 0;
+  lv_obj_clean(lv_scr_act());
+  //Load Setting
+  //******Auto Setting******
+  main_screen = lv_obj_create(lv_scr_act());
+  lv_obj_set_size(main_screen, 480, 320);
+  loadFromFile();
+  refreshScreen();
 }
 
 void btn_exit2(lv_event_t *e) {
@@ -173,10 +177,18 @@ static void dropdown_event_handler(lv_event_t *e) {
 void checkbox_event_cb(lv_event_t *e) {
   if (check1 == 0) {
     Serial.println("auto on");
-    check1 = 0;
+    lcd_show2("auto on");
+    check1 = 1;
+    AutoServerChek = 1;
+    writeSdCard("/AutoServerChek.txt", "Auto on");
+    lcd_show2(SdCardMessage);
   } else {
     Serial.println("auto off");
-    check1 = 1;
+    lcd_show2("auto off");
+    check1 = 0;
+    AutoServerChek = 0;
+    writeSdCard("/AutoServerChek.txt", "Auto off");
+    lcd_show2(SdCardMessage);
   }
 }
 
@@ -228,6 +240,8 @@ void close_modal(lv_event_t *e) {
   }
   String dropdown_options = "";
   bool first_line = true;
+  numberCount = 0;
+  readyNumber = 0;
   while (file.available()) {
     String line = file.readStringUntil('\n');
     if (line.startsWith("number")) {
@@ -235,6 +249,13 @@ void close_modal(lv_event_t *e) {
       dropdown_options += line;
       dropdown_options.trim();  // در صورت نیاز حذف فاصله‌های اضافی از کل رشته نهایی
       first_line = false;
+      ServerNumbers[numberCount] = extract_phone_number(line);
+      Serial.print("serverNumber");
+      Serial.print(numberCount);
+      Serial.print(":");
+      Serial.println(ServerNumbers[numberCount]);
+      ++numberCount;
+      ++readyNumber;
     }
   }
   file.close();
@@ -337,7 +358,7 @@ void load_numbers(lv_event_t *e) {
     number.trim();
     lv_obj_t *list_btn = lv_list_add_btn(list, NULL, number.c_str());
     lv_obj_t *del_btn = lv_btn_create(list_btn);
-    lv_obj_set_size(del_btn, 40, 20);
+    lv_obj_set_size(del_btn, 80, 35);
     lv_obj_align(del_btn, LV_ALIGN_RIGHT_MID, -10, 0);
     lv_obj_add_event_cb(del_btn, delete_number, LV_EVENT_CLICKED, strdup(number.c_str()));
     lv_obj_t *labelll = lv_label_create(del_btn);
@@ -356,6 +377,12 @@ void load_numbers(lv_event_t *e) {
 //******************************************creat panel**************************************
 //******************************************creat panel**************************************
 void create_server() {
+
+  lv_style_init(&style1);
+  lv_style_set_text_font(&style1, &lv_font_unscii_8);        // تنظیم فونت
+  lv_style_set_bg_color(&style1, lv_color_hex(0x00FF00));    // رنگ پس‌زمینه لیبل‌ها (خاکستری تیره)
+  lv_style_set_text_color(&style1, lv_color_hex(0x000000));  // رنگ متن لیبل‌ها (مشکی)
+
   //btn_xl
   btn[0] = lv_btn_create(lv_scr_act());
   lv_obj_set_size(btn[0], 76, 41);
@@ -469,6 +496,8 @@ void create_server() {
   }
   String dropdown_options = "";
   bool first_line = true;
+  numberCount = 0;
+  readyNumber = 0;
   while (file.available()) {
     String line = file.readStringUntil('\n');
     if (line.startsWith("number")) {
@@ -476,8 +505,17 @@ void create_server() {
       dropdown_options += line;
       dropdown_options.trim();  // در صورت نیاز حذف فاصله‌های اضافی از کل رشته نهایی
       first_line = false;
+
+      ServerNumbers[numberCount] = extract_phone_number(line);
+      Serial.print("serverNumber");
+      Serial.print(numberCount);
+      Serial.print(":");
+      Serial.println(ServerNumbers[numberCount]);
+      ++numberCount;
+      ++readyNumber;
     }
   }
+  numberCount = 0;
   file.close();
   lv_dropdown_set_options(ddlist, dropdown_options.c_str());
   // lv_dropdown_set_options(ddlist, "sim1: 09372425086\nsim2: 09114764806\nsim3: 09379274959\nsim4:\nsim5:\nsim6:\n");
@@ -490,9 +528,205 @@ void create_server() {
   lv_obj_set_style_text_color(cb1, lv_color_hex(0xFF0000), 0);
   lv_obj_set_pos(cb1, 23, 78);
   lv_obj_add_event_cb(cb1, checkbox_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
+  if (AutoServerChek == 1) {
+    check1 = 1;
+    lv_obj_add_state(cb1, LV_STATE_CHECKED);
+  }
   //terminalp
   terminal = lv_textarea_create(lv_scr_act());
+  lv_obj_add_style(terminal, &styleTerminal, 0);
   lv_obj_set_size(terminal, 386, 207);  // سایز ترمینال
   lv_obj_set_pos(terminal, 7, 109);
+  lv_textarea_set_text(terminal, "");
   lv_textarea_set_text(terminal, "Awaiting input...\n");  // متن اولیه
+
+  //btn_Auto_Setting
+  btn[11] = lv_btn_create(lv_scr_act());
+  lv_obj_add_style(btn[11], &style1, 0);
+  lv_obj_set_pos(btn[11], 234, 57);
+  lv_obj_set_size(btn[11], 76, 41);
+  lv_obj_add_event_cb(btn[11], AutoSetti, LV_EVENT_CLICKED, NULL);
+  label_create[13] = lv_label_create(btn[11]);    /*Add a label to the button*/
+  lv_label_set_text(label_create[13], "AutoSet"); /*Set the labels text*/
+  lv_obj_center(label_create[13]);
+  Serial.println("button11 creat");
+}
+
+//***************Auto Setting**************
+
+void ExitToServer(lv_event_t *e) {
+  Serial.println("Exit to Server");
+  count_files = 0;
+  btn_count = 0;
+  lv_obj_clean(main_screen);
+  lv_obj_clean(lv_scr_act());
+  menu_select = "server";
+  change_menu = 1;
+}
+
+void saveToFile() {
+  Serial.print("Saving to sd card...");
+  SD.remove(FILE_NAME);  // حذف فایل قبلی
+  File file = SD.open(FILE_NAME, FILE_WRITE);
+  if (!file) {
+    Serial.println("not Files");
+    return;
+  }
+  for (int i = 0; i < phoneCount; i++) {
+    file.print(phoneNumbers[i].number);
+    file.print(",");
+    file.println(phoneNumbers[phoneCount].checked ? "1" : "0");
+    // file.println(lv_obj_has_state(checkBoxes[i], LV_STATE_CHECKED) ? "1" : "0");
+  }
+  file.close();
+}
+
+void changeToSave(lv_event_t *e) {
+  lcd_show2("New Number Saved...");
+  Serial.print("Saving to sd card...");
+  SD.remove(FILE_NAME);  // حذف فایل قبلی
+  File file = SD.open(FILE_NAME, FILE_WRITE);
+  if (!file) {
+    Serial.println("not Files");
+    return;
+  }
+  for (int i = 0; i < phoneCount; i++) {
+    file.print(phoneNumbers[i].number);
+    file.print(",");
+    //file.println(phoneNumbers[phoneCount].checked ? "1" : "0");
+    file.println(lv_obj_has_state(checkBoxes[i], LV_STATE_CHECKED) ? "1" : "0");
+  }
+  file.close();
+  loadFromFile();
+  refreshScreen();
+}
+
+void DellAllNumber(lv_event_t *e) {
+  lcd_show2("Dellete All");
+  SD.remove(FILE_NAME);  // حذف فایل قبلی
+  lv_obj_clean(main_screen);
+  lv_obj_clean(lv_scr_act());
+  for (int i = 0; i < 50; i++) {
+    NumberTest[i] = "";
+  }
+  loadFromFile();
+  refreshScreen();
+}
+
+void loadFromFile() {
+  Serial.println("Load Files...");
+  File file = SD.open(FILE_NAME, FILE_READ);
+  if (!file) {
+    Serial.println("File Not Found!!!");
+    return;
+  }
+  phoneCount = 0;
+  while (file.available() && phoneCount < MAX_NUMBERS) {
+    String line = file.readStringUntil('\n');
+    line.trim();
+    if (line.length() == 0) continue;
+    int sep = line.indexOf(',');
+    if (sep == -1) continue;
+    String num = line.substring(0, sep);
+    String check = line.substring(sep + 1);
+    phoneNumbers[phoneCount].number = num;
+    phoneNumbers[phoneCount].checked = (check.toInt() == 1);
+    phoneCount++;
+  }
+  file.close();
+}
+
+void refreshScreen() {
+  Serial.println("Refresh Screen");
+  lv_obj_clean(main_screen);
+
+  main_screen = lv_obj_create(lv_scr_act());
+  lv_obj_set_size(main_screen, 480, 319);                        // اندازه کانتینر
+  lv_obj_align(main_screen, LV_ALIGN_CENTER, 0, 0);              // مرکز قرار دادن
+  lv_obj_set_scroll_dir(main_screen, LV_DIR_VER);                // تنظیم اسکرول به سمت چپ و راست
+  lv_obj_set_scroll_snap_x(main_screen, LV_SCROLL_SNAP_CENTER);  // اسکرول به سمت مرکز
+
+  //lv_obj_set_flex_flow(main_screen, LV_FLEX_FLOW_COLUMN);
+  // lv_obj_set_scroll_dir(main_screen, LV_DIR_VER);
+  //lv_obj_set_scroll_snap_y(main_screen, LV_SCROLL_SNAP_START);
+  // lv_obj_set_size(main_screen, 480, 320);
+  // lv_obj_center(main_screen);
+
+  btn[0] = lv_btn_create(main_screen);
+  lv_obj_set_size(btn[0], 60, 35);
+  lv_obj_set_pos(btn[0], 5, 5);
+  lv_obj_add_event_cb(btn[0], ExitToServer, LV_EVENT_CLICKED, NULL);
+  label_create[0] = lv_label_create(btn[0]);  /*Add a label to the button*/
+  lv_label_set_text(label_create[0], "Exit"); /*Set the labels text*/
+  lv_obj_center(label_create[0]);
+
+  btn[1] = lv_btn_create(main_screen);
+  lv_obj_set_size(btn[1], 100, 35);
+  lv_obj_set_pos(btn[1], 190, 5);
+  //lv_obj_add_event_cb(btn[1], changeSave, LV_EVENT_CLICKED, NULL);
+  lv_obj_add_event_cb(btn[1], changeToSave, LV_EVENT_CLICKED, NULL);
+  label_create[1] = lv_label_create(btn[1]);         /*Add a label to the button*/
+  lv_label_set_text(label_create[1], "Save Change"); /*Set the labels text*/
+  lv_obj_center(label_create[1]);
+
+  btn[2] = lv_btn_create(main_screen);
+  lv_obj_set_size(btn[2], 100, 35);
+  lv_obj_set_pos(btn[2], 300, 5);
+  //lv_obj_add_event_cb(btn[1], changeSave, LV_EVENT_CLICKED, NULL);
+  lv_obj_add_event_cb(btn[2], DellAllNumber, LV_EVENT_CLICKED, NULL);
+  label_create[2] = lv_label_create(btn[2]);      /*Add a label to the button*/
+  lv_label_set_text(label_create[2], "Dell All"); /*Set the labels text*/
+  lv_obj_center(label_create[2]);
+
+  add_btn = lv_btn_create(main_screen);
+  lv_obj_set_size(add_btn, 100, 35);
+  lv_obj_set_pos(add_btn, 80, 5);
+  lv_obj_add_event_cb(add_btn, addNumber_event, LV_EVENT_CLICKED, NULL);
+  label_add = lv_label_create(add_btn);
+  lv_label_set_text(label_add, "New List");
+  lv_obj_center(label_add);
+
+  //terminalp
+  terminal = lv_textarea_create(main_screen);
+  lv_obj_add_style(terminal, &styleTerminal, 0);
+  lv_obj_set_size(terminal, 280, 200);  // سایز ترمینال
+  lv_obj_set_pos(terminal, 150, 45);
+  lv_textarea_set_text(terminal, "");
+  lv_textarea_set_text(terminal, "Input Numbers:\n");  // متن اولیه
+
+  for (int i = 0; i < 50; i++) {
+    NumberTest[i] = "";
+  }
+
+  int posy = 30;
+  for (int i = 0; i < phoneCount; i++) {
+    posy += 30;
+    checkBoxes[i] = lv_checkbox_create(main_screen);
+    lv_checkbox_set_text(checkBoxes[i], phoneNumbers[i].number.c_str());
+    lv_obj_set_pos(checkBoxes[i], 5, posy);
+    if (phoneNumbers[i].checked) {
+      lv_obj_add_state(checkBoxes[i], LV_STATE_CHECKED);
+      NumberTest[i] = phoneNumbers[i].number;
+      String sss = "Number" + String(i) + ":" + phoneNumbers[i].number;
+      lcd_show2(sss);
+    }
+  }
+}
+
+void addNumber_event(lv_event_t *e) {
+  Serial.println("Auto add Number");
+  lcd_show2("Add number From Contact...");
+  //if (phoneCount >= MAX_NUMBERS) return;
+  for (int i = 0; i < readyNumber; i++) {
+    phoneNumbers[phoneCount].number = ServerNumbers[i];
+    phoneNumbers[phoneCount].checked = false;
+    Serial.print("phoneCount");
+    Serial.print(phoneCount);
+    Serial.print(":");
+    Serial.println(phoneNumbers[phoneCount].number);
+    phoneCount++;
+  }
+
+  saveToFile();
+  refreshScreen();
 }

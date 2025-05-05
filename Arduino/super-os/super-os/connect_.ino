@@ -3,17 +3,17 @@
 // تابع تغییر وضعیت اتصال
 void update_connection_status(bool connected) {
   if (connected) {
-    btn_count = 1;
-    lv_obj_del(label_create[btn_count]);
-    free((void *)img_dsc[1].data);  //main free cach
+    //btn_count = 2;
+    lv_obj_del(label_create[4]);
+    free((void *)img_dsc[4].data);  //main free cach
     //free((void *)img_dsc[2].data);  //main free cach
-    set_label(80, 80, 310, -20, "/desktop_pic/stm32_connect.bmp");
+    set_label(4, 80, 80, 310, -20, "/desktop_pic/stm32_connect.bmp");
   } else {
-    btn_count = 1;
-    lv_obj_del(label_create[btn_count]);
-    free((void *)img_dsc[1].data);  //main free cach
+    //btn_count = 2;
+    lv_obj_del(label_create[3]);
+    free((void *)img_dsc[3].data);  //main free cach
     //free((void *)img_dsc[2].data);  //main free cach
-    set_label(80, 80, 310, -20, "/desktop_pic/stm32_disconnect.bmp");
+    set_label(3, 80, 80, 310, -20, "/desktop_pic/stm32_disconnect.bmp");
   }
 }
 

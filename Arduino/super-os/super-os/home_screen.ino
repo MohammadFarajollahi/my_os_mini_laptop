@@ -26,10 +26,10 @@ void event_handler_button1_desktop(lv_event_t *e) {
   count_files = 0;
   btn_count = 0;
   //***files list***
-  listDir(SD, "/desktop_pic", 0);
-  Serial.print("file_count:");
-  Serial.println(count_files);
-  for (int i = 0; i <= count_files - 1; i++) {
+  // listDir(SD, "/desktop_pic", 0);
+  // Serial.print("file_count:");
+  // Serial.println(count_files);
+  for (int i = 1; i <= 4; i++) {
     free((void *)img_dsc[i].data);  //main free cach
   }
   lv_obj_del(menu_container);
@@ -40,6 +40,24 @@ void event_handler_button1_desktop(lv_event_t *e) {
 }
 
 
+void ServerButton(lv_event_t *e) {
+  Serial.println("ServerButton");
+  count_files = 0;
+  btn_count = 0;
+  //***files list***
+  // listDir(SD, "/desktop_pic", 0);
+  // Serial.print("file_count:");
+  // Serial.println(count_files);
+  for (int i = 1; i <= 4; i++) {
+    free((void *)img_dsc[i].data);  //main free cach
+  }
+  lv_obj_del(menu_container);
+  lv_obj_clean(lv_scr_act());
+  menu_select = "server";
+  change_menu = 1;
+  Serial.println("desktop delete");
+}
+
 void create_desktop_icon() {
   btn_count = 0;
   menu_container = lv_obj_create(lv_scr_act());
@@ -47,7 +65,53 @@ void create_desktop_icon() {
   lv_obj_align(menu_container, LV_ALIGN_CENTER, 0, 0);              // مرکز قرار دادن
   lv_obj_set_scroll_dir(menu_container, LV_DIR_VER);                // تنظیم اسکرول به سمت چپ و راست
   lv_obj_set_scroll_snap_x(menu_container, LV_SCROLL_SNAP_CENTER);  // اسکرول به سمت مرکز
-  set_button("Menu", 80, 80, 10, 200, 26, 264, "/desktop_pic/menu.bmp");
-  set_label(80, 80, 310, -20, "/desktop_pic/stm32_disconnect.bmp");
-  set_label(80, 80, 310, -20, "/desktop_pic/stm32_connect.bmp");
+  set_button(1, "Menu", 80, 80, 10, 200, 26, 264, "/desktop_pic/menu.bmp");
+  set_button(2, "Server", 80, 80, 120, 200, 130, 264, "/menu_pic/server.bmp");
+  set_label(3, 80, 80, 310, -20, "/desktop_pic/stm32_disconnect.bmp");
+  set_label(4, 80, 80, 310, -20, "/desktop_pic/stm32_connect.bmp");
+  //terminalp
+  lv_style_init(&styleTerminal);
+  lv_style_set_text_font(&styleTerminal, &lv_font_unscii_8);  // تنظیم فونت
+  lv_style_set_bg_color(&styleTerminal, lv_color_hex(0x000000));
+  lv_style_set_text_color(&styleTerminal, lv_color_hex(0x00FF00));
+
+  terminal = lv_textarea_create(menu_container);
+  lv_obj_add_style(terminal, &styleTerminal, 0);
+  lv_obj_set_size(terminal, 240, 200);  // سایز ترمینال
+  lv_obj_set_pos(terminal, 210, 76);
+  lv_textarea_set_text(terminal, "");                 // Clear terminal
+  lv_textarea_set_text(terminal, "ٌwait for Data\n");  // متن اولیه
+
+  //*****read Auto*****
+  readSdCard("/AutoServerChek.txt");
+  lcd_show2(SdCardMessage);
+  Serial.println(SdCardMessage);
+  Serial.println(fileContent);
+  if (fileContent != "") lcd_show2(fileContent);
+  if (fileContent == "Auto on") {
+    AutoServerChek = 1;
+    lcd_show2("auto Server is on");
+    Serial.println("auto Server is on");
+    loadFromFile();
+    for (int i = 0; i < 50; i++) {
+      NumberTest[i] = "";
+    }
+    int FoundNumbers = 0;
+    lcd_show2("input Numbers-->");
+    for (int i = 0; i < phoneCount; i++) {
+      if (phoneNumbers[i].checked) {
+        NumberTest[i] = phoneNumbers[i].number;
+        String sss = "Number" + String(i) + ":" + phoneNumbers[i].number;
+        lcd_show2(sss);
+        ++FoundNumbers;
+      }
+    }
+    String CCc = "Number Counts:" + String(FoundNumbers);
+    lcd_show2(CCc);
+  }
+  if (fileContent == "Auto off") {
+    AutoServerChek = 0;
+    lcd_show2("auto Server is off");
+    Serial.println("auto Server is off");
+  }
 }
