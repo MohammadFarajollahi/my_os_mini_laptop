@@ -2,6 +2,7 @@
 
 void Terminal_() {
   if (change_menu == 1) {
+    SerialState = 0;
     change_menu = 0;
     Serial.println("Create terminal...");
     create_terminal();

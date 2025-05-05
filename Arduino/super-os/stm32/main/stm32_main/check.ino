@@ -8,6 +8,18 @@ void check_() {
     Serial2.println("esp32 check for ready");
   }
 
+  //****check for ready****
+  if (inputData == "network-check") {
+    if (GsmReady == 1) {
+      Serial1.println("network_ready");
+      Serial2.println("ESP32 Cheking Network ready");
+    }
+    if (GsmReady == 0) {
+      Serial1.println("network not ready");
+      Serial2.println("ESP32 Cheking Network not ready");
+    }
+  }
+
   //****go to serial mode****
   if (inputData == "Serial_mode") {
     serialMode = 1;
@@ -74,6 +86,4 @@ void check_() {
 
     /////
   }
-
-  
 }

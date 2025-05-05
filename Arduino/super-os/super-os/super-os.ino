@@ -119,6 +119,12 @@ String SdCardMessage;
 String fileContent = "";
 int AutoServerChek;
 int autoCheckCount;
+int SerialState;
+int pavanCheckTimer;
+
+int Network_ready;
+int check_Network_count;
+int Network_check_timer;
 
 
 // تابع وقفه تایمر
@@ -143,8 +149,10 @@ void IRAM_ATTR onTimer() {
 
   ///stm32timer
   if (stm32_ready == 0) ++stm32_check_timer;
+  if (stm32_ready == 1 && Network_ready == 0) ++Network_check_timer;
   if (Serial_mode_count == 1) ++Serial_mode_timer;
   if (AtCommandMode_count == 1) ++AtCommandMode_timer;
+  if (AutoServerChek == 1 && Network_ready == 1) ++pavanCheckTimer;
 }
 
 

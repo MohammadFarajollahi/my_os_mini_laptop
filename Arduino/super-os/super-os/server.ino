@@ -7,6 +7,7 @@ void server() {
     main_timer = 0;
     main_sec = 0;
     batt_sec = 0;
+    SerialState = 1;
   }
 
   while (stm32_serial.available() > 0) {
@@ -57,6 +58,7 @@ void btn_exit2(lv_event_t *e) {
   lv_obj_clean(lv_scr_act());
   menu_select = "mainMenu";
   change_menu = 1;
+  SerialState = 0;
 }
 
 void btn_l(lv_event_t *e) {

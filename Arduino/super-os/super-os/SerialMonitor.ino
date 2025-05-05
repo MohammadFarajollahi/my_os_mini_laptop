@@ -33,6 +33,7 @@ lv_coord_t originalX, originalY;  // ذخیره موقعیت اصلی فیلد �
 
 void SerialMonitor() {
   if (change_menu == 1) {
+    SerialState = 2;
     change_menu = 0;
     Serial.println("Create SerialMonitor...");
     create_SerialMonitor();
@@ -163,6 +164,7 @@ void btn_exit_serial(lv_event_t *e) {
   serial_mode = 0;
   Serial_mode_timer = 0;
   Serial_mode_count = 0;
+  SerialState = 0;
 }
 // تن
 // Event handler for clear button

@@ -92,5 +92,6 @@ void firstStart() {
     smsReceived = 0;
     GsmReadyTimer = 0;
     Serial2.println("GSM READY && START");
+    Serial1.println("network_ready");
   }
 }

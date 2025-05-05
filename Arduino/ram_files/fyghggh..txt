@@ -1,0 +1,21 @@
+Awaiting input...
+STM32 Ready: Baud rate-->9600
+At command mode!!!
+stm32-atcommandmode on
+EXIT At command mode!!!At command mode!!!
+stm32-atcommandmode on
+EXIT At command mode!!!
+stm32-atcommandmode off
+At command mode!!!
+stm32-atcommandmode on
+
+stm32-atcommandmode off
+At command mode!!!
+stm32-atcommandmode on
+EXIT At command mode!!!
+stm32-atcommandmode offEXIT At command mode!!!
+stm32-atcommandmode off
+At command mode!!!
+stm32-atcommandmode on
+
+
