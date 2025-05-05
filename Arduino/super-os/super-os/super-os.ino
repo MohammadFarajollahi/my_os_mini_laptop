@@ -85,12 +85,6 @@ int Serial_mode_timer;
 int AtCommandMode;
 int AtCommandMode_count;
 int AtCommandMode_timer;
-String ServerNumbers[50];
-String NumberTest[50];
-String SdCardMessage;
-String fileContent = "";
-int AutoServerChek;
-int autoCheckCount;
 int numberCount = 0;
 int readyNumber;
 
@@ -105,7 +99,6 @@ lv_obj_t *ta;
 lv_obj_t *list;
 #define FILE_PATH "/phone_numbers.txt"
 String Checknumbers[50];
-
 //Auto Setting
 #define MAX_NUMBERS 50
 #define FILE_NAME "/numbers.txt"
@@ -120,6 +113,12 @@ lv_obj_t *main_screen;
 // ایجاد دکمه برای افزودن شماره
 lv_obj_t *add_btn;
 lv_obj_t *label_add;
+String ServerNumbers[50];
+String NumberTest[50];
+String SdCardMessage;
+String fileContent = "";
+int AutoServerChek;
+int autoCheckCount;
 
 
 // تابع وقفه تایمر
