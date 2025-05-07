@@ -1,7 +1,8 @@
 
 //***************************//
 void readSMS() {
-  Serial3.println("AT+CMGR=0");
+  Serial3.println("AT+CMGL=\"ALL\"");
+  smsCheck = 1;
 }
 
 //******sendSMS*****

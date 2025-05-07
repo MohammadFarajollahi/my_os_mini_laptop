@@ -28,7 +28,7 @@ void firstStart() {
     GsmReadyTimer = 0;
   }
 
-  if (GsmReadyCount == 3 && GsmReadyTimer >= 4) {
+  if (GsmReadyCount == 3 && GsmReadyTimer >= 6) {
     Serial3.println("AT+CREG?");
     GsmReadyCount = 3;
     GsmReadyTimer = 0;

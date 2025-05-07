@@ -10,5 +10,6 @@ void timer_(void) {
   if (GsmReady == 1){
     digitalWrite(gsmLed, 1);
     if(messageSendCheck == 1)++messageSendTimer;
+    if(smsCheck == 1)++SMScheckTimer;
   }
 }

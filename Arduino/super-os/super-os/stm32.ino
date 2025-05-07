@@ -2,13 +2,13 @@
 
 void stm32() {
 
-  if (stm32_ready == 0 && stm32_check_timer >= 2) {
+  if (stm32_ready == 0 && stm32_check_timer >= 2) {  //stm32 Check
     stm32_check_timer = 0;
     stm32_serial.println("stm32-check");
     lcd_show2("STM32 Check...");
   }
 
-  if (stm32_ready == 1 && Network_check_timer >= 2 && Network_ready == 0) {
+  if (stm32_ready == 1 && Network_check_timer >= 5 && Network_ready == 0) {  //network Check
     Network_check_timer = 0;
     stm32_serial.println("network-check");
     lcd_show2("network Check...");
@@ -23,8 +23,8 @@ void check_uart_stm32() {
     stm32_string = stm32_serial.readStringUntil('\n');
     stm32_string.trim();
     Serial.println(stm32_string);
-    //***stm32_ready***
-    sub_stm32_string = stm32_string.substring(0, 11);
+   // lcd_show2(stm32_string);
+    //******stm32_ready******
     if (stm32_string == "stm32_ready") {
       Serial.println("stm ready");
       lcd_show2("STM32 ready");
@@ -32,8 +32,7 @@ void check_uart_stm32() {
       check_stm32_count = 0;
       stm32_check_timer = 0;
     }
-    //***Network_ready***
-    sub_stm32_string = stm32_string.substring(0, 13);
+    //******Network_ready*******
     if (stm32_string == "network_ready") {
       Serial.println("Network ready");
       lcd_show2("***network Ready***");

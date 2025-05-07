@@ -4,7 +4,7 @@ int input_data2;
 
 //uart1 STM32<---->ESP32
 //uart2 STM32<---->TTL
-void stm32_uart1() {
+void stm32_uart1() {  //esp32  Uart
   while (Serial1.available() > 0) {
     inputData = Serial1.readStringUntil('\n');
     inputData.trim();

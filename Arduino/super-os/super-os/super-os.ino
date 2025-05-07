@@ -126,6 +126,11 @@ int Network_ready;
 int check_Network_count;
 int Network_check_timer;
 
+int PavanSendSMStimer;
+int PavanSendSmSCheck;
+int PavanSMSNum;
+int PavanCountCheck;
+
 
 // تابع وقفه تایمر
 void IRAM_ATTR onTimer() {

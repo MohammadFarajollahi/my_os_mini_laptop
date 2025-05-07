@@ -29,6 +29,15 @@ int p2p = 1;
 int smsReceived = 0;
 int gsmError;
 int simModel;
+
+int smsCheck;
+int SMScheckTimer;
+int smsCheckCount;
+String InputNumber;
+String inputMessage;
+
+String MessNum;
+
 #define RI_PIN PA4  // پایه RI ماژول متصل به PA0
 void smsInterrupt() {
  // if (GsmReady == 1) smsReceived = 1;
