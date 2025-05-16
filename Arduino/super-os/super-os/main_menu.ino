@@ -3,22 +3,18 @@ void main_menu() {
 
   if (change_menu == 1) {
     change_menu = 0;
-    // tft.fillScreen(TFT_WHITE);
-    // tft.setCursor(10, 10);
-    // tft.setTextFont(1);
-    // tft.setTextSize(2);
-    // tft.setTextColor(TFT_BLACK, TFT_WHITE);
-    // tft.println("Wait...");
     Serial.println("main menu creating...");
     create_menu();
     main_timer = 0;
     main_sec = 0;
     batt_sec = 0;
+    SerialState = 0;
+    lcdShow = 0;
   }
-  if (change_menu == 0) {
-    lv_timer_handler(); /* let the GUI do its work */
-    lv_task_handler();
-  }
+  // if (change_menu == 0) {
+  //   lv_timer_handler(); /* let the GUI do its work */
+  //   lv_task_handler();
+  // }
 }
 
 void event_handler_button1(lv_event_t *e) {

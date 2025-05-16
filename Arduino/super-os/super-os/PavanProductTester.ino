@@ -29,7 +29,7 @@ void PavanProductTester() {
     StorageServer();
     lcd_show2("Next Number");
     PavanCountCheck = 0;
-    pavanCheckTimer = smsChekTime - 20;
+    pavanCheckTimer = smsChekTime - 30;
     cheksmsTimer = 0;
     chekSMScount = 0;
     reciveError = 0;
@@ -41,16 +41,16 @@ void PavanProductTester() {
     }
   }
   //*****error******
-  if (chekSMScount == 1 && cheksmsTimer >= 20) {
+  if (chekSMScount == 1 && cheksmsTimer >= 30) {
     lcd_show2("sms not Send");
     chekSMScount = 0;
     cheksmsTimer = 0;
-    pavanCheckTimer = smsChekTime - 20;
+    pavanCheckTimer = smsChekTime - 30;
     PavanCountCheck = 0;
     ++reciveError;
   }
 
-  if (chekSMScount == 2 && cheksmsTimer >= 25) {
+  if (chekSMScount == 2 && cheksmsTimer >= 30) {
     lcd_show2("sms not Recive!!!");
     chekSMScount = 0;
     cheksmsTimer = 0;
@@ -65,7 +65,7 @@ void PavanProductTester() {
     lcd_show2(NumberTest[PavanSMSNum]);
     lcd_show2("Next Number");
     PavanCountCheck = 0;
-    pavanCheckTimer = smsChekTime - 20;
+    pavanCheckTimer = smsChekTime - 30;
     cheksmsTimer = 0;
     chekSMScount = 0;
     reciveError = 0;
@@ -97,7 +97,7 @@ void StorageServer() {
     int Sucsses;
     if (reciveError < 3) Sucsses = sucsses.toInt() + 1;
     if (reciveError >= 3) Sucsses = sucsses.toInt();
-    String TEXTS = "D:" + String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + "_T:" + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
+    String TEXTS = "D:" + String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + " T:" + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
     StaticJsonDocument<200> jsonDoc;
     jsonDoc["servertime"] = TEXTS;
     jsonDoc["numberTest"] = NumberTest[PavanSMSNum].substring(0, 13);  ///+989372425086
@@ -111,7 +111,7 @@ void StorageServer() {
   if (numberTest != NumberTest[PavanSMSNum].substring(0, 13)) {
     Serial.println("First sd save...");
     lcd_show2("First SD Save...");
-    String TEXTS = "D:" + String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + "_T:" + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
+    String TEXTS = "D:" + String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + " T:" + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
     StaticJsonDocument<200> jsonDoc;
     jsonDoc["servertime"] = TEXTS;
     jsonDoc["numberTest"] = NumberTest[PavanSMSNum].substring(0, 13);  ///+989372425086

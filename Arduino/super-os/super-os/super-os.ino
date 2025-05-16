@@ -128,7 +128,7 @@ int AutoServerChek;
 int autoCheckCount;
 int SerialState;
 int pavanCheckTimer;
-int smsChekTime = 3600;  // 3600
+int smsChekTime = 1800;  // 3600
 
 int Network_ready;
 int check_Network_count;
@@ -174,6 +174,7 @@ void IRAM_ATTR onTimer() {
   if (Serial_mode_count == 1) ++Serial_mode_timer;
   if (AtCommandMode_count == 1) ++AtCommandMode_timer;
   if (AutoServerChek == 1 && Network_ready == 1) ++pavanCheckTimer;
+  if (chekSMScount >= 1) ++cheksmsTimer;
 }
 
 

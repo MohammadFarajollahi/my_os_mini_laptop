@@ -23,7 +23,8 @@ void check_uart_stm32() {
     stm32_string = stm32_serial.readStringUntil('\n');
     stm32_string.trim();
     Serial.println(stm32_string);
-    ///lcd_show2(stm32_string);
+    if (menu_select == "server" && lcdShow == 1) lcd_show2(stm32_string);
+    if (menu_select == "SerialMonitor") lcd_show(stm32_string);
     jasonCheck();
     //******stm32_ready******
     if (stm32_string == "stm32_ready") {
@@ -71,39 +72,23 @@ void check_uart_stm32() {
 }
 
 
-
-
 void jasonCheck() {
   String jsonString = stm32_string;
-
-  // تبدیل رشته JSON به یک آبجکت
   StaticJsonDocument<200> jsonDoc;
   DeserializationError error = deserializeJson(jsonDoc, jsonString);
-
-  // if (error) {
-  //   Serial2.println("خطا در پارس کردن JSON!");
-  //   return;
-  // }
-
-  // استخراج داده‌ها از JSON
   String type = jsonDoc["type"];
   String phone = jsonDoc["phone"];
   String message = jsonDoc["message"];
   String extra = jsonDoc["extra"];
-
-  // نمایش در سریال مانیتور
   Serial.println("type: " + type);
   Serial.println("number: " + phone);
   Serial.println("message: " + message);
   Serial.println("extra: " + extra);
 
-
-
   if (type == "ReciveSMS") {
     if (chekSMScount == 2) {
       if (phone == NumberTest[PavanSMSNum].substring(0, 13)) chekSMScount = 3;
     }
-
 
     //***Server Check***
     if (phone == "+989114764806" || phone == "+989372425086") {
@@ -114,10 +99,10 @@ void jasonCheck() {
       delay(3000);
 
       StaticJsonDocument<200> jsonDoc;
-      jsonDoc["type"] = "sendSMS";     // نوع دیتا (مثلاً ارسال پیامک)
-      jsonDoc["phone"] = phone;        // شماره تلفن
+      jsonDoc["type"] = "sendSMS";   // نوع دیتا (مثلاً ارسال پیامک)
+      jsonDoc["phone"] = phone;      // شماره تلفن
       jsonDoc["message"] = "Im OK";  // متن پیام
-      jsonDoc["extra"] = "urgent";     // هر دیتای اضافی
+      jsonDoc["extra"] = "urgent";   // هر دیتای اضافی
       String jsonString;
       serializeJson(jsonDoc, jsonString);
       Serial.println(jsonString);

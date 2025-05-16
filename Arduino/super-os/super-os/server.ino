@@ -63,9 +63,9 @@ void btn_exit2(lv_event_t *e) {
   count_files = 0;
   btn_count = 0;
   lv_obj_clean(lv_scr_act());
-  menu_select = "mainMenu";
+  menu_select = "desktop";
   change_menu = 1;
-  SerialState = 0;
+  SerialState = 1;
 }
 
 void btn_l(lv_event_t *e) {
@@ -620,14 +620,14 @@ void severCheck() {
   lv_obj_clean(main_screen);
 
   main_screen = lv_obj_create(lv_scr_act());
-  lv_obj_set_size(main_screen, 480, 319);                        // اندازه کانتینر
+  lv_obj_set_size(main_screen, 600, 319);                        // اندازه کانتینر
   lv_obj_align(main_screen, LV_ALIGN_CENTER, 0, 0);              // مرکز قرار دادن
   lv_obj_set_scroll_dir(main_screen, LV_DIR_VER);                // تنظیم اسکرول به سمت چپ و راست
   lv_obj_set_scroll_snap_x(main_screen, LV_SCROLL_SNAP_CENTER);  // اسکرول به سمت مرکز
 
   btn[0] = lv_btn_create(main_screen);
   lv_obj_set_size(btn[0], 60, 35);
-  lv_obj_set_pos(btn[0], 1, 1);
+  lv_obj_set_pos(btn[0], 50, 1);
   lv_obj_add_event_cb(btn[0], ExitToServer, LV_EVENT_CLICKED, NULL);
   label_create[0] = lv_label_create(btn[0]);  /*Add a label to the button*/
   lv_label_set_text(label_create[0], "Exit"); /*Set the labels text*/
@@ -649,10 +649,9 @@ void severCheck() {
 
 void listAndReadFiles(File dir) {
   int CountFil = 0;
-  String fileHis[50];
   list = lv_list_create(main_screen);
-  lv_obj_set_size(list, 500, 280);
-  lv_obj_align(list, LV_ALIGN_TOP_MID, 0, 30);
+  lv_obj_set_size(list, 600, 300);
+  lv_obj_align(list, LV_ALIGN_TOP_MID, 40, 30);
   while (true) {
     File entry = dir.openNextFile();
     if (!entry) {
@@ -673,27 +672,38 @@ void listAndReadFiles(File dir) {
           String numberTest = jsonDoc["numberTest"];
           String sendTest = jsonDoc["sendTest"];
           String sucsses = jsonDoc["sucsses"];
-          Serial.print("file name:");
-          Serial.println(numberTest);
-          Serial.print("file date:");
-          Serial.println(servertime);
-          Serial.print("Send Number:");
-          Serial.println(sendTest);
-          Serial.print("sucsses:");
-          Serial.println(sucsses);
-          fileHis[CountFil] = jsonString;
 
-
-          String ss = servertime + " ID" + String(CountFil + 1) + ":" + numberTest + " Check:" + sendTest + "-->" + sucsses;
+          String ss = "ID" + String(CountFil + 1) + ":" + numberTest + " " + servertime + " Ch:" + sendTest + "-->" + sucsses;
           lv_obj_t *list_btn = lv_list_add_btn(list, NULL, ss.c_str());
           lv_obj_t *del_btn = lv_btn_create(list_btn);
+          lv_obj_t *zer_btn = lv_btn_create(list_btn);
+          //style
           lv_obj_add_style(del_btn, &style2, 0);
-          lv_obj_set_size(del_btn, 60, 30);
-          lv_obj_align(del_btn, LV_ALIGN_RIGHT_MID, -1, 0);
+
+          lv_style_set_text_font(&style3, &lv_font_unscii_8);  // تنظیم فونت
+          lv_style_set_bg_color(&style3, lv_color_hex(0x0000FF));
+          lv_style_set_text_color(&style3, lv_color_hex(0xFFFFFF));
+          lv_obj_add_style(zer_btn, &style3, 0);
+
+          lv_style_set_text_font(&style1, &lv_font_unscii_8);  // تنظیم فونت
+          lv_style_set_bg_color(&style1, lv_color_hex(0x000000));
+          lv_style_set_text_color(&style1, lv_color_hex(0x00FF00));
+          lv_obj_add_style(list_btn, &style1, 0);
+
+          lv_obj_set_size(del_btn, 65, 30);
+          lv_obj_align(del_btn, LV_ALIGN_RIGHT_MID, 0, 0);
           String dd = "/server_History/" + filename;
           lv_obj_add_event_cb(del_btn, delete_his, LV_EVENT_CLICKED, strdup(dd.c_str()));
           lv_obj_t *labelll = lv_label_create(del_btn);
-          lv_label_set_text(labelll, "Dellet");
+          lv_label_set_text(labelll, "Delete");
+          lv_obj_center(labelll);
+
+          lv_obj_set_size(zer_btn, 65, 30);
+          lv_obj_align(zer_btn, LV_ALIGN_RIGHT_MID, 0, 0);
+          lv_obj_add_event_cb(zer_btn, reset_his, LV_EVENT_CLICKED, strdup(dd.c_str()));
+          lv_obj_t *label22 = lv_label_create(zer_btn);
+          lv_label_set_text(label22, "Reset");
+          lv_obj_center(label22);
           ++CountFil;
         }
         Serial.println("\n-----------------------------");
@@ -702,6 +712,23 @@ void listAndReadFiles(File dir) {
 
     entry.close();
   }
+}
+
+void reset_his(lv_event_t *e) {
+  lv_obj_t *btn = lv_event_get_target(e);
+  const char *number = (const char *)lv_event_get_user_data(e);
+  Serial.println("First sd save...");
+  lcd_show2("First SD Save...");
+  String TEXTS = "D:" + String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + " T:" + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
+  StaticJsonDocument<200> jsonDoc;
+  jsonDoc["servertime"] = TEXTS;
+  jsonDoc["numberTest"] = number.substring(16, 13);  ///server_History/+989372425086.txt";
+  jsonDoc["sendTest"] = "0";                                         // متن پیام
+  jsonDoc["sucsses"] = "0";                                          // هر دیتای اضافی
+  String jsonString;
+  serializeJson(jsonDoc, jsonString);
+  Serial.println(jsonString);
+  writeSdCard(number, jsonString);
 }
 
 void delete_his(lv_event_t *e) {
