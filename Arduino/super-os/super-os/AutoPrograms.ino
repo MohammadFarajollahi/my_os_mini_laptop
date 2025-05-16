@@ -1,8 +1,6 @@
 
 
-void AutoPrograms(){
+void AutoPrograms() {
 
-if(AutoServerChek == 1)PavanProductTester();
-
-
+  if (AutoServerChek == 1 && Network_ready == 1) PavanProductTester();
 }

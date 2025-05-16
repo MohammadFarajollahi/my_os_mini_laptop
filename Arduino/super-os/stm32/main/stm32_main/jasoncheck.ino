@@ -21,7 +21,7 @@ void jasonCheck() {
   // نمایش در سریال مانیتور
   Serial2.println("type: " + type);
   Serial2.println("number: " + phone);
-  Serial2.println("messafe: " + message);
+  Serial2.println("message: " + message);
   Serial2.println("extra: " + extra);
 
   if(type == "sendSMS"){

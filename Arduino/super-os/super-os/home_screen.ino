@@ -13,7 +13,7 @@ void home_screen() {
     main_sec = 0;
     batt_sec = 0;
     stm32_ready = 0;
-    Network_ready = 0;
+    //Network_ready = 0;
   }
   battery_read();
   clock_read();
@@ -73,7 +73,19 @@ void create_desktop_icon() {
   set_label(4, 80, 80, 310, -16, "/desktop_pic/stm32_connect.bmp");
   set_label(5, 80, 80, 265, -20, "/desktop_pic/anten.bmp");
   set_label(6, 80, 80, 265, -20, "/desktop_pic/anten2.bmp");
+
+  if (Network_ready == 1) {
+    lv_obj_del(label_create[5]);
+    free((void *)img_dsc[5].data);  //main free cach
+    set_label(5, 80, 80, 265, -20, "/desktop_pic/anten.bmp");
+  }
+  if (Network_ready == 0) {
+    lv_obj_del(label_create[6]);
+    free((void *)img_dsc[6].data);  //main free cach
+    set_label(6, 80, 80, 265, -20, "/desktop_pic/anten2.bmp");
+  }
   //terminalp
+  lcdShow = 1;
   lv_style_init(&styleTerminal);
   lv_style_set_text_font(&styleTerminal, &lv_font_unscii_8);  // تنظیم فونت
   lv_style_set_bg_color(&styleTerminal, lv_color_hex(0x000000));
@@ -100,13 +112,17 @@ void create_desktop_icon() {
     for (int i = 0; i < 50; i++) {
       NumberTest[i] = "";
     }
-    int FoundNumbers = 0;
+
     lcd_show2("input Numbers-->");
+    FoundNumbers = 0;
+    int NumtestCount = 0;
     for (int i = 0; i < phoneCount; i++) {
       if (phoneNumbers[i].checked) {
-        NumberTest[i] = phoneNumbers[i].number;
-        String sss = "Number" + String(i) + ":" + phoneNumbers[i].number;
+        NumberTest[NumtestCount] = phoneNumbers[i].number;
+       // String sss = "Number" + String(i) + ":" + phoneNumbers[i].number;
+       String sss = "Number" + String(NumtestCount) + ":" + NumberTest[NumtestCount];
         lcd_show2(sss);
+        ++NumtestCount;
         ++FoundNumbers;
       }
     }

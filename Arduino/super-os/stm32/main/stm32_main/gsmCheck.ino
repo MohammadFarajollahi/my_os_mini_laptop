@@ -28,6 +28,7 @@ void Gsm_check() {
       InputNumber = GsmData.substring(23, 36);
       MessNum = GsmData.substring(7, 8);
       inputMessage = Serial3.readStringUntil('\n');
+      inputMessage.trim();
       Serial2.print("Message Number:");
       Serial2.println(MessNum);
       Serial2.print("Input Number:");
@@ -64,6 +65,7 @@ void Gsm_check() {
       InputNumber = GsmData.substring(21, 34);
       MessNum = GsmData.substring(7, 8);
       inputMessage = Serial3.readStringUntil('\n');
+      inputMessage.trim();
       Serial2.print("Message Number:");
       Serial2.println(MessNum);
       Serial2.print("Input Number:");

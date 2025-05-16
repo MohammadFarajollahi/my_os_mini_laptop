@@ -20,9 +20,16 @@ void server() {
 }
 
 void lcd_show2(String input_char) {
-  String input = input_char;  // Read input until newline
-  lv_textarea_add_text(terminal, input.c_str());
-  lv_textarea_add_text(terminal, "\n");  // Add new line
+  if (lcdShow == 1) {
+    ++TerminalCount;
+    if (TerminalCount >= 50) {
+      lv_textarea_set_text(terminal, "");
+      TerminalCount = 0;
+    }
+    String input = input_char;  // Read input until newline
+    lv_textarea_add_text(terminal, input.c_str());
+    lv_textarea_add_text(terminal, "\n");  // Add new line
+  }
 }
 
 void btn_xl(lv_event_t *e) {
@@ -147,10 +154,10 @@ void btn_r(lv_event_t *e) {
   }
 
   StaticJsonDocument<200> jsonDoc;
-  jsonDoc["type"] = "sendSMS";                               // نوع دیتا (مثلاً ارسال پیامک)
-  jsonDoc["phone"] = selected_number;                        // شماره تلفن
-  jsonDoc["message"] = "R 1111 1111 12345678 " + NumerSend;  // متن پیام
-  jsonDoc["extra"] = "urgent";                               // هر دیتای اضافی
+  jsonDoc["type"] = "sendSMS";                                            // نوع دیتا (مثلاً ارسال پیامک)
+  jsonDoc["phone"] = selected_number;                                     // شماره تلفن
+  jsonDoc["message"] = "R 1111 1111 12345678 +989920541029" + NumerSend;  // متن پیام
+  jsonDoc["extra"] = "urgent";                                            // هر دیتای اضافی
   String jsonString;
   serializeJson(jsonDoc, jsonString);
   Serial.println(jsonString);
@@ -375,6 +382,20 @@ void load_numbers(lv_event_t *e) {
   lv_label_set_text(close_label, "Close");
 }
 
+
+void btnCHeck(lv_event_t *e) {
+  Serial.println("***Btn check***");
+  count_files = 0;
+  btn_count = 0;
+  lv_obj_clean(lv_scr_act());
+  //Load Setting
+  //******Auto Setting******
+  main_screen = lv_obj_create(lv_scr_act());
+  lv_obj_set_size(main_screen, 480, 320);
+  severCheck();
+}
+
+
 //******************************************creat panel**************************************
 //******************************************creat panel**************************************
 //******************************************creat panel**************************************
@@ -467,7 +488,12 @@ void create_server() {
   lv_obj_center(label_create[10]);
 
   //btn_editNumber
+  lv_style_init(&style2);
+  lv_style_set_text_font(&style2, &lv_font_unscii_8);  // تنظیم فونت
+  lv_style_set_bg_color(&style2, lv_color_hex(0xFFF00000));
+  lv_style_set_text_color(&style2, lv_color_hex(0xFFFFFF));
   btn[10] = lv_btn_create(lv_scr_act());
+  lv_obj_add_style(btn[10], &style2, 0);
   lv_obj_set_pos(btn[10], 1, 340);
   lv_obj_set_size(btn[10], 150, 40);
   lv_obj_add_event_cb(btn[10], load_numbers, LV_EVENT_CLICKED, NULL);
@@ -535,6 +561,7 @@ void create_server() {
     lv_obj_add_state(cb1, LV_STATE_CHECKED);
   }
   //terminalp
+  lcdShow = 1;
   terminal = lv_textarea_create(lv_scr_act());
   lv_obj_add_style(terminal, &styleTerminal, 0);
   lv_obj_set_size(terminal, 386, 207);  // سایز ترمینال
@@ -552,6 +579,22 @@ void create_server() {
   lv_label_set_text(label_create[13], "AutoSet"); /*Set the labels text*/
   lv_obj_center(label_create[13]);
   Serial.println("button11 creat");
+
+  //btnCheck
+  //btn_Auto_Setting
+  lv_style_init(&style4);
+  lv_style_set_text_font(&style4, &lv_font_unscii_8);  // تنظیم فونت
+  lv_style_set_bg_color(&style4, lv_color_hex(0xFFFF000));
+  lv_style_set_text_color(&style4, lv_color_hex(0x000000));
+  btn[12] = lv_btn_create(lv_scr_act());
+  lv_obj_add_style(btn[12], &style4, 0);
+  lv_obj_set_pos(btn[12], 1, 390);
+  lv_obj_set_size(btn[12], 150, 40);
+  lv_obj_add_event_cb(btn[12], btnCHeck, LV_EVENT_CLICKED, NULL);
+  label_create[14] = lv_label_create(btn[12]);  /*Add a label to the button*/
+  lv_label_set_text(label_create[14], "Check"); /*Set the labels text*/
+  lv_obj_center(label_create[14]);
+  Serial.println("button12 creat");
 }
 
 //***************Auto Setting**************
@@ -564,6 +607,86 @@ void ExitToServer(lv_event_t *e) {
   lv_obj_clean(lv_scr_act());
   menu_select = "server";
   change_menu = 1;
+}
+
+//))))))))))))))))))Server Chech))))))))))))))))))))))
+void severCheck() {
+  lcdShow = 0;
+  lv_obj_clean(main_screen);
+
+  main_screen = lv_obj_create(lv_scr_act());
+  lv_obj_set_size(main_screen, 480, 319);                        // اندازه کانتینر
+  lv_obj_align(main_screen, LV_ALIGN_CENTER, 0, 0);              // مرکز قرار دادن
+  lv_obj_set_scroll_dir(main_screen, LV_DIR_VER);                // تنظیم اسکرول به سمت چپ و راست
+  lv_obj_set_scroll_snap_x(main_screen, LV_SCROLL_SNAP_CENTER);  // اسکرول به سمت مرکز
+
+  btn[0] = lv_btn_create(main_screen);
+  lv_obj_set_size(btn[0], 60, 35);
+  lv_obj_set_pos(btn[0], 5, 5);
+  lv_obj_add_event_cb(btn[0], ExitToServer, LV_EVENT_CLICKED, NULL);
+  label_create[0] = lv_label_create(btn[0]);  /*Add a label to the button*/
+  lv_label_set_text(label_create[0], "Exit"); /*Set the labels text*/
+  lv_obj_center(label_create[0]);
+  int fileOk;
+  File root1;
+  root1 = SD.open("/server_History");  // پوشه‌ای که فایل‌ها داخلش هستن
+  if (!root1 || !root1.isDirectory()) {
+    Serial.println("Failed to open folder or it's not a directory!");
+    fileOk = 0;
+  } else {
+    fileOk = 1;
+  }
+  if (fileOk == 1) {
+    Serial.println("directory Open");
+    listAndReadFiles(root1);
+  }
+}
+
+void listAndReadFiles(File dir) {
+  int CountFil=0;
+  while (true) {
+    File entry = dir.openNextFile();
+    if (!entry) {
+      // تموم شدن فایل‌ها
+      break;
+    }
+
+    if (!entry.isDirectory()) {
+      String filename = entry.name();
+      if (filename.endsWith(".txt")) {
+        Serial.print("📂 Reading file: ");
+        Serial.println(filename);
+        int posy = 30;
+        while (entry.available()) {
+          String jsonString = entry.readStringUntil('\n');
+          StaticJsonDocument<200> jsonDoc;
+          DeserializationError error = deserializeJson(jsonDoc, jsonString);
+          String servertime = jsonDoc["servertime"];
+          String numberTest = jsonDoc["numberTest"];
+          String sendTest = jsonDoc["sendTest"];
+          String sucsses = jsonDoc["sucsses"];
+          Serial.print("file name:");
+          Serial.println(numberTest);
+          Serial.print("file date:");
+          Serial.println(servertime);
+          Serial.print("Send Number:");
+          Serial.println(sendTest);
+          Serial.print("sucsses:");
+          Serial.println(sucsses);
+          Serial.println("\n-----------------------------");
+
+          posy += 30;
+          labelCheck[CountFil] = lv_label_create(main_screen);
+          lv_label_set_text(label_create[CountFil], "Dell All"); /*Set the labels text*/
+          lv_obj_center(label_create[CountFil]);
+          ++CountFil;
+        }
+        Serial.println("\n-----------------------------");
+      }
+    }
+
+    entry.close();
+  }
 }
 
 void saveToFile() {
@@ -648,12 +771,6 @@ void refreshScreen() {
   lv_obj_set_scroll_dir(main_screen, LV_DIR_VER);                // تنظیم اسکرول به سمت چپ و راست
   lv_obj_set_scroll_snap_x(main_screen, LV_SCROLL_SNAP_CENTER);  // اسکرول به سمت مرکز
 
-  //lv_obj_set_flex_flow(main_screen, LV_FLEX_FLOW_COLUMN);
-  // lv_obj_set_scroll_dir(main_screen, LV_DIR_VER);
-  //lv_obj_set_scroll_snap_y(main_screen, LV_SCROLL_SNAP_START);
-  // lv_obj_set_size(main_screen, 480, 320);
-  // lv_obj_center(main_screen);
-
   btn[0] = lv_btn_create(main_screen);
   lv_obj_set_size(btn[0], 60, 35);
   lv_obj_set_pos(btn[0], 5, 5);
@@ -689,6 +806,7 @@ void refreshScreen() {
   lv_obj_center(label_add);
 
   //terminalp
+  lcdShow = 1;
   terminal = lv_textarea_create(main_screen);
   lv_obj_add_style(terminal, &styleTerminal, 0);
   lv_obj_set_size(terminal, 280, 200);  // سایز ترمینال

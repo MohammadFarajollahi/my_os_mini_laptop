@@ -49,12 +49,16 @@ lv_img_dsc_t img_dsc[20];
 lv_obj_t *menu_container;
 size_t img_size;
 lv_style_t style1;
+lv_style_t style2;
+lv_style_t style3;
+lv_style_t style4;
 lv_style_t styleTerminal;
 lv_obj_t *label1;
 lv_obj_t *screen;
 lv_obj_t *clock_label;
 lv_style_t clock_style;
 lv_obj_t *label_create[20];
+lv_obj_t *labelCheck[50];
 // تعریف ویجت‌های ترمینال
 lv_obj_t *terminal_output;
 lv_obj_t *command_input;
@@ -66,6 +70,7 @@ int main_sec;
 int batt_sec;
 int main_timer;
 int clock_second, clock_minute, clock_hour;
+int date_day , date_month , date_Year;
 hw_timer_t *timer = NULL;       // اشاره‌گر به تایمر
 volatile uint32_t seconds = 0;  // شمارنده ثانیه
 // متغیرهای دما
@@ -102,6 +107,7 @@ String Checknumbers[50];
 //Auto Setting
 #define MAX_NUMBERS 50
 #define FILE_NAME "/numbers.txt"
+
 typedef struct {
   String number;
   bool checked;
@@ -121,15 +127,23 @@ int AutoServerChek;
 int autoCheckCount;
 int SerialState;
 int pavanCheckTimer;
+int smsChekTime = 40; // 3600
 
 int Network_ready;
 int check_Network_count;
-int Network_check_timer;
+int Network_check_timer = 20;
+int FoundNumbers;
 
 int PavanSendSMStimer;
 int PavanSendSmSCheck;
 int PavanSMSNum;
 int PavanCountCheck;
+int chekSMScount;
+int cheksmsTimer;
+int reciveError;
+int lcdShow;
+int TerminalCount;
+String FileServer;
 
 
 // تابع وقفه تایمر

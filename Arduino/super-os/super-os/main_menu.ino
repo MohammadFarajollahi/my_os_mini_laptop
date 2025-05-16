@@ -158,6 +158,7 @@ void event_handler_button17(lv_event_t *e) {
 
 
 void create_menu() {
+  lcdShow = 0;
   SerialState = 0;
   count_files = 0;
   btn_count = 0;
