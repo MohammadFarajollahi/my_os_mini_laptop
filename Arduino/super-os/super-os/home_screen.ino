@@ -19,6 +19,25 @@ void home_screen() {
   clock_read();
   stm32_connect_check();
   stm32();
+  refresh();
+}
+
+void refresh() {
+  if (refreshScreenDesk >= 4000) {
+    refreshScreenDesk = 0;
+
+    Serial.println("Refresh");
+    count_files = 0;
+    btn_count = 0;
+    for (int i = 1; i <= 6; i++) {
+      free((void *)img_dsc[i].data);  //main free cach
+    }
+    lv_obj_del(menu_container);
+    lv_obj_clean(lv_scr_act());
+    menu_select = "desktop";
+    change_menu = 1;
+    Serial.println("desktop delete");
+  }
 }
 
 
@@ -26,10 +45,6 @@ void event_handler_button1_desktop(lv_event_t *e) {
   Serial.println("button1");
   count_files = 0;
   btn_count = 0;
-  //***files list***
-  // listDir(SD, "/desktop_pic", 0);
-  // Serial.print("file_count:");
-  // Serial.println(count_files);
   for (int i = 1; i <= 6; i++) {
     free((void *)img_dsc[i].data);  //main free cach
   }
@@ -37,6 +52,7 @@ void event_handler_button1_desktop(lv_event_t *e) {
   lv_obj_clean(lv_scr_act());
   menu_select = "mainMenu";
   change_menu = 1;
+  refreshScreenDesk = 0;
   Serial.println("desktop delete");
 }
 
@@ -60,6 +76,7 @@ void ServerButton(lv_event_t *e) {
 }
 
 void create_desktop_icon() {
+  refreshScreenDesk = 0;
   SerialState = 1;
   btn_count = 0;
   menu_container = lv_obj_create(lv_scr_act());
@@ -119,8 +136,8 @@ void create_desktop_icon() {
     for (int i = 0; i < phoneCount; i++) {
       if (phoneNumbers[i].checked) {
         NumberTest[NumtestCount] = phoneNumbers[i].number;
-       // String sss = "Number" + String(i) + ":" + phoneNumbers[i].number;
-       String sss = "Number" + String(NumtestCount) + ":" + NumberTest[NumtestCount];
+        // String sss = "Number" + String(i) + ":" + phoneNumbers[i].number;
+        String sss = "Number" + String(NumtestCount) + ":" + NumberTest[NumtestCount];
         lcd_show2(sss);
         ++NumtestCount;
         ++FoundNumbers;

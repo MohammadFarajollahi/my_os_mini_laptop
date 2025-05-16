@@ -189,6 +189,11 @@ void checkbox_event_cb(lv_event_t *e) {
     lcd_show2("auto on");
     check1 = 1;
     AutoServerChek = 1;
+    PavanCountCheck = 0;
+    pavanCheckTimer = 3000;
+    cheksmsTimer = 0;
+    chekSMScount = 0;
+    reciveError = 0;
     writeSdCard("/AutoServerChek.txt", "Auto on");
     lcd_show2(SdCardMessage);
   } else {
@@ -622,7 +627,7 @@ void severCheck() {
 
   btn[0] = lv_btn_create(main_screen);
   lv_obj_set_size(btn[0], 60, 35);
-  lv_obj_set_pos(btn[0], 5, 5);
+  lv_obj_set_pos(btn[0], 1, 1);
   lv_obj_add_event_cb(btn[0], ExitToServer, LV_EVENT_CLICKED, NULL);
   label_create[0] = lv_label_create(btn[0]);  /*Add a label to the button*/
   lv_label_set_text(label_create[0], "Exit"); /*Set the labels text*/
@@ -643,7 +648,11 @@ void severCheck() {
 }
 
 void listAndReadFiles(File dir) {
-  int CountFil=0;
+  int CountFil = 0;
+  String fileHis[50];
+  list = lv_list_create(main_screen);
+  lv_obj_set_size(list, 500, 280);
+  lv_obj_align(list, LV_ALIGN_TOP_MID, 0, 30);
   while (true) {
     File entry = dir.openNextFile();
     if (!entry) {
@@ -656,7 +665,6 @@ void listAndReadFiles(File dir) {
       if (filename.endsWith(".txt")) {
         Serial.print("📂 Reading file: ");
         Serial.println(filename);
-        int posy = 30;
         while (entry.available()) {
           String jsonString = entry.readStringUntil('\n');
           StaticJsonDocument<200> jsonDoc;
@@ -673,12 +681,19 @@ void listAndReadFiles(File dir) {
           Serial.println(sendTest);
           Serial.print("sucsses:");
           Serial.println(sucsses);
-          Serial.println("\n-----------------------------");
+          fileHis[CountFil] = jsonString;
 
-          posy += 30;
-          labelCheck[CountFil] = lv_label_create(main_screen);
-          lv_label_set_text(label_create[CountFil], "Dell All"); /*Set the labels text*/
-          lv_obj_center(label_create[CountFil]);
+
+          String ss = servertime + " ID" + String(CountFil + 1) + ":" + numberTest + " Check:" + sendTest + "-->" + sucsses;
+          lv_obj_t *list_btn = lv_list_add_btn(list, NULL, ss.c_str());
+          lv_obj_t *del_btn = lv_btn_create(list_btn);
+          lv_obj_add_style(del_btn, &style2, 0);
+          lv_obj_set_size(del_btn, 60, 30);
+          lv_obj_align(del_btn, LV_ALIGN_RIGHT_MID, -1, 0);
+          String dd = "/server_History/" + filename;
+          lv_obj_add_event_cb(del_btn, delete_his, LV_EVENT_CLICKED, strdup(dd.c_str()));
+          lv_obj_t *labelll = lv_label_create(del_btn);
+          lv_label_set_text(labelll, "Dellet");
           ++CountFil;
         }
         Serial.println("\n-----------------------------");
@@ -688,6 +703,19 @@ void listAndReadFiles(File dir) {
     entry.close();
   }
 }
+
+void delete_his(lv_event_t *e) {
+  lv_obj_t *btn = lv_event_get_target(e);
+  const char *number = (const char *)lv_event_get_user_data(e);
+  File root1;
+  root1 = SD.open("/server_History");  // پوشه‌ای که فایل‌ها داخلش هستن
+  //String dd = "/server_History/" + number;
+  SD.remove(number);  // حذف فایل قبلی
+  root1.close();      //dd.c_str()
+  lv_obj_del(btn->parent);
+}
+
+
 
 void saveToFile() {
   Serial.print("Saving to sd card...");

@@ -97,7 +97,7 @@ void StorageServer() {
     int Sucsses;
     if (reciveError < 3) Sucsses = sucsses.toInt() + 1;
     if (reciveError >= 3) Sucsses = sucsses.toInt();
-    String TEXTS = "Date:" + String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + "-- Time:" + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
+    String TEXTS = "D:" + String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + "_T:" + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
     StaticJsonDocument<200> jsonDoc;
     jsonDoc["servertime"] = TEXTS;
     jsonDoc["numberTest"] = NumberTest[PavanSMSNum].substring(0, 13);  ///+989372425086
@@ -111,7 +111,7 @@ void StorageServer() {
   if (numberTest != NumberTest[PavanSMSNum].substring(0, 13)) {
     Serial.println("First sd save...");
     lcd_show2("First SD Save...");
-    String TEXTS = "Date:" + String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + "-- Time:" + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
+    String TEXTS = "D:" + String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + "_T:" + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
     StaticJsonDocument<200> jsonDoc;
     jsonDoc["servertime"] = TEXTS;
     jsonDoc["numberTest"] = NumberTest[PavanSMSNum].substring(0, 13);  ///+989372425086

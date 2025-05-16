@@ -70,12 +70,13 @@ int main_sec;
 int batt_sec;
 int main_timer;
 int clock_second, clock_minute, clock_hour;
-int date_day , date_month , date_Year;
+int date_day, date_month, date_Year;
 hw_timer_t *timer = NULL;       // اشاره‌گر به تایمر
 volatile uint32_t seconds = 0;  // شمارنده ثانیه
 // متغیرهای دما
 float temp_sensor1, temp_sensor2, temp_sensor3;
-
+int refreshScreenDesk;
+int desktopScreen;
 //stm32_uart
 HardwareSerial stm32_serial(1);
 String stm32_string, sub_stm32_string;
@@ -127,7 +128,7 @@ int AutoServerChek;
 int autoCheckCount;
 int SerialState;
 int pavanCheckTimer;
-int smsChekTime = 40; // 3600
+int smsChekTime = 3600;  // 3600
 
 int Network_ready;
 int check_Network_count;
@@ -164,6 +165,7 @@ void IRAM_ATTR onTimer() {
   if (main_timer == 1) {
     ++batt_sec;
     ++main_sec;
+    ++refreshScreenDesk;
   }
 
   ///stm32timer
