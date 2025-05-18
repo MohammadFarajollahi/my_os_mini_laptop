@@ -586,7 +586,6 @@ void create_server() {
   Serial.println("button11 creat");
 
   //btnCheck
-  //btn_Auto_Setting
   lv_style_init(&style4);
   lv_style_set_text_font(&style4, &lv_font_unscii_8);  // تنظیم فونت
   lv_style_set_bg_color(&style4, lv_color_hex(0xFFFF000));
@@ -614,6 +613,16 @@ void ExitToServer(lv_event_t *e) {
   change_menu = 1;
 }
 
+void RefreshServer(lv_event_t *e) {
+  Serial.println("Exit to Server");
+  count_files = 0;
+  btn_count = 0;
+  lv_obj_clean(main_screen);
+  lv_obj_clean(lv_scr_act());
+
+  severCheck();
+}
+
 //))))))))))))))))))Server Chech))))))))))))))))))))))
 void severCheck() {
   lcdShow = 0;
@@ -632,6 +641,15 @@ void severCheck() {
   label_create[0] = lv_label_create(btn[0]);  /*Add a label to the button*/
   lv_label_set_text(label_create[0], "Exit"); /*Set the labels text*/
   lv_obj_center(label_create[0]);
+
+  btn[1] = lv_btn_create(main_screen);
+  lv_obj_set_size(btn[1], 65, 35);
+  lv_obj_set_pos(btn[1], 150, 1);
+  lv_obj_add_event_cb(btn[1], RefreshServer, LV_EVENT_CLICKED, NULL);
+  label_create[2] = lv_label_create(btn[1]);     /*Add a label to the button*/
+  lv_label_set_text(label_create[2], "Refresh"); /*Set the labels text*/
+  lv_obj_center(label_create[2]);
+
   int fileOk;
   File root1;
   root1 = SD.open("/server_History");  // پوشه‌ای که فایل‌ها داخلش هستن
@@ -722,9 +740,9 @@ void reset_his(lv_event_t *e) {
   String TEXTS = "D:" + String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + " T:" + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
   StaticJsonDocument<200> jsonDoc;
   jsonDoc["servertime"] = TEXTS;
-  jsonDoc["numberTest"] = number.substring(16, 13);  ///server_History/+989372425086.txt";
-  jsonDoc["sendTest"] = "0";                                         // متن پیام
-  jsonDoc["sucsses"] = "0";                                          // هر دیتای اضافی
+  jsonDoc["numberTest"] = String(number).substring(16, 29);  ///server_History/+989372425086.txt";
+  jsonDoc["sendTest"] = "0";                                 // متن پیام
+  jsonDoc["sucsses"] = "0";                                  // هر دیتای اضافی
   String jsonString;
   serializeJson(jsonDoc, jsonString);
   Serial.println(jsonString);
