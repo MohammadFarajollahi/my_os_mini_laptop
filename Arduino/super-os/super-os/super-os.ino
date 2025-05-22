@@ -128,7 +128,7 @@ int AutoServerChek;
 int autoCheckCount;
 int SerialState;
 int pavanCheckTimer;
-int smsChekTime = 1800;  // 3600
+int smsChekTime = 1800;  // 1800
 
 int Network_ready;
 int check_Network_count;
@@ -147,6 +147,14 @@ int TerminalCount;
 String FileServer;
 
 
+//*****rtcTime*****
+int requestClock;
+int requestClockCount;
+int requestClockTimer = 500;
+String weekDays[] = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+int weekday;
+String Day_;
+
 // تابع وقفه تایمر
 void IRAM_ATTR onTimer() {
   ++clock_second;
@@ -156,7 +164,7 @@ void IRAM_ATTR onTimer() {
     if (clock_minute > 59) {
       clock_minute = 0;
       ++clock_hour;
-      if (clock_hour > 11) {
+      if (clock_hour > 23) {
         clock_hour = 0;
       }
     }
@@ -166,7 +174,10 @@ void IRAM_ATTR onTimer() {
     ++batt_sec;
     ++main_sec;
     ++refreshScreenDesk;
+    if (requestClock == 1) ++requestClockCount;
   }
+
+
 
   ///stm32timer
   if (stm32_ready == 0) ++stm32_check_timer;

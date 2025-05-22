@@ -691,7 +691,7 @@ void listAndReadFiles(File dir) {
           String sendTest = jsonDoc["sendTest"];
           String sucsses = jsonDoc["sucsses"];
 
-          String ss = "ID" + String(CountFil + 1) + ":" + numberTest + " " + servertime + " Ch:" + sendTest + "-->" + sucsses;
+          String ss = "ID" + String(CountFil + 1) + ":" + numberTest  + " " +servertime + " Ch:" + sendTest + ">" + sucsses;
           lv_obj_t *list_btn = lv_list_add_btn(list, NULL, ss.c_str());
           lv_obj_t *del_btn = lv_btn_create(list_btn);
           lv_obj_t *zer_btn = lv_btn_create(list_btn);
@@ -737,7 +737,7 @@ void reset_his(lv_event_t *e) {
   const char *number = (const char *)lv_event_get_user_data(e);
   Serial.println("First sd save...");
   lcd_show2("First SD Save...");
-  String TEXTS = "D:" + String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + " T:" + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
+  String TEXTS =  String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + " " + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
   StaticJsonDocument<200> jsonDoc;
   jsonDoc["servertime"] = TEXTS;
   jsonDoc["numberTest"] = String(number).substring(16, 29);  ///server_History/+989372425086.txt";

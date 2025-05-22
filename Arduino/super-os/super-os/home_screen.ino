@@ -56,6 +56,11 @@ void event_handler_button1_desktop(lv_event_t *e) {
   Serial.println("desktop delete");
 }
 
+void RefresshGsmTime(lv_event_t *e) {
+  Serial.println("RefreshButton");
+  lcd_show2("GSM Time Refresh");
+  pavanCheckTimer = 1800;
+}
 
 void ServerButton(lv_event_t *e) {
   Serial.println("ServerButton");
@@ -91,6 +96,15 @@ void create_desktop_icon() {
   set_label(5, 80, 80, 265, -20, "/desktop_pic/anten.bmp");
   set_label(6, 80, 80, 265, -20, "/desktop_pic/anten2.bmp");
 
+  btn[7] = lv_btn_create(menu_container);
+  lv_obj_set_pos(btn[7], 130, 83);
+  lv_obj_set_size(btn[7], 80, 40);
+  lv_obj_add_event_cb(btn[7], RefresshGsmTime, LV_EVENT_CLICKED, NULL);
+  label_create[8] = lv_label_create(btn[7]);     /*Add a label to the button*/
+  lv_label_set_text(label_create[8], "Refresh"); /*Set the labels text*/
+  lv_obj_center(label_create[8]);
+  Serial.println("button11 creat");
+
   if (Network_ready == 1) {
     lv_obj_del(label_create[5]);
     free((void *)img_dsc[5].data);  //main free cach
@@ -110,8 +124,8 @@ void create_desktop_icon() {
 
   terminal = lv_textarea_create(menu_container);
   lv_obj_add_style(terminal, &styleTerminal, 0);
-  lv_obj_set_size(terminal, 240, 200);  // سایز ترمینال
-  lv_obj_set_pos(terminal, 210, 80);
+  lv_obj_set_size(terminal, 240, 220);  // سایز ترمینال
+  lv_obj_set_pos(terminal, 210, 60);
   lv_textarea_set_text(terminal, "");                 // Clear terminal
   lv_textarea_set_text(terminal, "ٌwait for Data\n");  // متن اولیه
 

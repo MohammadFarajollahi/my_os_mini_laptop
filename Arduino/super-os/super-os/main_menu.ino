@@ -78,7 +78,21 @@ void event_handler_button5(lv_event_t *e) {
 }
 
 void event_handler_button6(lv_event_t *e) {
-  Serial.println("button6");
+  Serial.println("button6:ClockSetting");
+   Serial.println("button7:music player");
+  count_files = 0;
+  btn_count = 0;
+  //***files list***
+  listDir(SD, "/menu_pic", 0);
+  Serial.print("file_count:");
+  Serial.println(count_files);
+  for (int i = 0; i <= count_files - 1; i++) {
+    free((void *)img_dsc[i].data);  //main free cach
+  }
+  lv_obj_del(menu_container);
+  lv_obj_clean(lv_scr_act());
+  menu_select = "ClockSetting";
+  change_menu = 1;
 }
 
 

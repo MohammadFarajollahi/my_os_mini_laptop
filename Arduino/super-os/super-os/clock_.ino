@@ -10,16 +10,31 @@ void update_time(const char *time, const char *day, const char *date) {
 }
 //////////////////////////////////////////////////////////////////////////////////////////////
 void clock_read() {
-  if (main_sec == 1) {
+  if (main_sec >= 1) {
     main_sec = 0;
     // update_time(clock_hour, clock_minute, clock_second); //  update_time(10, seconds / 60, seconds % 60); // ساعت 10:MM:SS
     static int seconds = 0;
     seconds++;
     char time[9], day[10], date[11];
     sprintf(time, "%02d:%02d:%02d", clock_hour, clock_minute, clock_second);
-    sprintf(day, "Wednesday");    // روز ثابت برای مثال
-    sprintf(date, "2024-12-04");  // تاریخ ثابت برای مثال
+    sprintf(day, Day_.c_str());  // روز ثابت برای مثال
+    String ss = String(date_Year) + "-" + String(date_month) + "-" + String(date_day);
+    sprintf(date, ss.c_str());  // تاریخ ثابت برای مثال
     update_time(time, day, date);
+
+    if (requestClock == 0 && requestClockTimer >= 500) {
+      requestClock = 1;
+      requestClockTimer = 0;
+      stm32_serial.println("GET");
+    }
+    if (requestClockCount >= 5) {
+      requestClockCount = 0;
+      requestClock = 0;
+      requestClockTimer = 500;
+    }
+    if (requestClockTimer >= 500) {
+      requestClock = 0;
+    }
   }
 }
 
@@ -61,5 +76,3 @@ void clock_() {
   lv_obj_align(date_label, LV_ALIGN_TOP_LEFT, 10, 50);
   lv_label_set_text(date_label, "2024-12-04");
 }
-
-
