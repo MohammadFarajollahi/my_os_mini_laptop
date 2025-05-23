@@ -142,10 +142,13 @@ int PavanCountCheck;
 int chekSMScount;
 int cheksmsTimer;
 int reciveError;
+int SendError;
 int lcdShow;
 int TerminalCount;
 String FileServer;
-
+int stm32checkTimer;
+int stm32checkCount;
+int checkError;
 
 //*****rtcTime*****
 int requestClock;
@@ -186,6 +189,7 @@ void IRAM_ATTR onTimer() {
   if (AtCommandMode_count == 1) ++AtCommandMode_timer;
   if (AutoServerChek == 1 && Network_ready == 1) ++pavanCheckTimer;
   if (chekSMScount >= 1) ++cheksmsTimer;
+  if (PavanCountCheck == 0) ++stm32checkTimer;
 }
 
 
@@ -216,7 +220,7 @@ void setup() {
   }
   Serial.println("SD card initialized.");
   tft.init();
-  tft.setRotation(1);
+  tft.setRotation(3);
   tft.startWrite();
   menu_select = "desktop";
   change_menu = 1;
@@ -229,6 +233,7 @@ void setup() {
 void loop() {
   // ++charj;
   // if (charj > 100) charj = 0;
+  stm32();
   AutoPrograms();
   select_menu();
   lv_timer_handler(); /* let the GUI do its work */

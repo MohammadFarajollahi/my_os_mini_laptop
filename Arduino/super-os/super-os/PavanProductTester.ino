@@ -1,7 +1,5 @@
 
 void PavanProductTester() {
-  stm32();
-
   if (pavanCheckTimer >= smsChekTime && PavanCountCheck == 0) {
     lcd_show2("Number1 SMS Send...");
     Serial.println("Number1 SMS Send --->> level1");
@@ -27,24 +25,40 @@ void PavanProductTester() {
 
   if (chekSMScount == 3) {  //****sms done****
     StorageServer();
+    lcd_show2("*******************");
+    lcd_show2("TEST DONE");
     lcd_show2("Next Number");
+    lcd_show2("*******************");
     PavanCountCheck = 0;
     pavanCheckTimer = smsChekTime - 30;
     cheksmsTimer = 0;
     chekSMScount = 0;
     reciveError = 0;
+    SendError = 0;
     ++PavanSMSNum;
     if (PavanSMSNum >= FoundNumbers) {
       PavanSMSNum = 0;
-      lcd_show2("First Number...");
+      lcd_show2("*******************");
+      lcd_show2("SMS TEST DONE");
+      lcd_show2("*******************");
       pavanCheckTimer = 0;
     }
   }
   //*****error******
-  if (chekSMScount == 1 && cheksmsTimer >= 30) {
-    lcd_show2("sms not Send");
+  if (chekSMScount == 1 && cheksmsTimer >= 30) { // no Response
+    lcd_show2("!!STM32 Not Response!!");
     chekSMScount = 0;
     cheksmsTimer = 0;
+    pavanCheckTimer = smsChekTime - 30;
+    PavanCountCheck = 0;
+    ++reciveError;
+  }
+
+   if (chekSMScount == 1 && SendError == 1) { // SMS Not Send
+    lcd_show2("!!SMS NOT SEND!!");
+    chekSMScount = 0;
+    cheksmsTimer = 0;
+    SendError = 0;
     pavanCheckTimer = smsChekTime - 30;
     PavanCountCheck = 0;
     ++reciveError;
@@ -72,7 +86,9 @@ void PavanProductTester() {
     ++PavanSMSNum;
     if (PavanSMSNum >= FoundNumbers) {
       PavanSMSNum = 0;
-      lcd_show2("First Number...");
+      lcd_show2("*******************");
+      lcd_show2("SMS TEST DONE");
+      lcd_show2("*******************");
       pavanCheckTimer = 0;
     }
   }
@@ -97,7 +113,7 @@ void StorageServer() {
     int Sucsses;
     if (reciveError < 3) Sucsses = sucsses.toInt() + 1;
     if (reciveError >= 3) Sucsses = sucsses.toInt();
-    String TEXTS =  String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + " " + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
+    String TEXTS = String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + " " + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
     StaticJsonDocument<200> jsonDoc;
     jsonDoc["servertime"] = TEXTS;
     jsonDoc["numberTest"] = NumberTest[PavanSMSNum].substring(0, 13);  ///+989372425086
@@ -111,7 +127,7 @@ void StorageServer() {
   if (numberTest != NumberTest[PavanSMSNum].substring(0, 13)) {
     Serial.println("First sd save...");
     lcd_show2("First SD Save...");
-    String TEXTS =  String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + " " + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
+    String TEXTS = String(date_Year) + "/" + String(date_month) + "/" + String(date_day) + " " + String(clock_hour) + ":" + String(clock_minute) + ":" + String(clock_second);
     StaticJsonDocument<200> jsonDoc;
     jsonDoc["servertime"] = TEXTS;
     jsonDoc["numberTest"] = NumberTest[PavanSMSNum].substring(0, 13);  ///+989372425086

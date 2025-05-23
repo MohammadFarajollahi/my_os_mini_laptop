@@ -18,7 +18,7 @@ void home_screen() {
   battery_read();
   clock_read();
   stm32_connect_check();
-  stm32();
+  //stm32();
   refresh();
 }
 
@@ -59,7 +59,7 @@ void event_handler_button1_desktop(lv_event_t *e) {
 void RefresshGsmTime(lv_event_t *e) {
   Serial.println("RefreshButton");
   lcd_show2("GSM Time Refresh");
-  pavanCheckTimer = 1800;
+  pavanCheckTimer = 1770;
 }
 
 void ServerButton(lv_event_t *e) {
@@ -124,8 +124,8 @@ void create_desktop_icon() {
 
   terminal = lv_textarea_create(menu_container);
   lv_obj_add_style(terminal, &styleTerminal, 0);
-  lv_obj_set_size(terminal, 240, 220);  // سایز ترمینال
-  lv_obj_set_pos(terminal, 210, 60);
+  lv_obj_set_size(terminal, 240, 210);  // سایز ترمینال
+  lv_obj_set_pos(terminal, 210, 65);
   lv_textarea_set_text(terminal, "");                 // Clear terminal
   lv_textarea_set_text(terminal, "ٌwait for Data\n");  // متن اولیه
 
